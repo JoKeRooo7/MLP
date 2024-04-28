@@ -5,6 +5,10 @@
 #include <vector>
 #include <cstddeff>  // std::size_t
 
+
+#include "../../support_functions/saving_data.h"
+#include "../../support_functions/activation_function.h"
+
 /* -----------==============================-------------
 This is a simple neuron model used to build 
 a perceptron.
@@ -17,7 +21,6 @@ w (weight) - weight between other neurons
 coefficient to smooth out sharp overshoots 
 as you move across the surface of the objective function.
 --------------==============================---------- */
-
 
 
 namespace mlp {
@@ -40,9 +43,10 @@ class Neuron {
         
         std::size_t layer_id_;
         std::size_t neuron_id_;
-        std::vector<std::pair<float, Neuron<C>>> children_;  // w
-        std::vector<std::pair<float, Neuron<C>>> prev_w_children_;  // w
-        
+        std::vector<std::pair<float> prev_w_children_;  // w
+        std::vector<std::pair<float> error_prev_weight_;  // Δw
+        std::vector<std::pair<float*, Neuron<C>*>> parent_;  // w
+        std::vector<std::pair<float*, Neuron<C>*>> children_;  // w
 };
 
 }  // abstract
