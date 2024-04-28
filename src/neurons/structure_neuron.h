@@ -5,6 +5,20 @@
 #include <vector>
 #include <cstddeff>  // std::size_t
 
+/* -----------==============================-------------
+This is a simple neuron model used to build 
+a perceptron.
+
+δ (error_) - the value of the error on the neuron
+o (output_value_) - the output value of the neuron
+η (learning_rate_) - learning rate
+w (weight) - weight between other neurons
+α (inertia_coefficient_) -  is the inertia 
+coefficient to smooth out sharp overshoots 
+as you move across the surface of the objective function.
+--------------==============================---------- */
+
+
 
 namespace mlp {
 
@@ -12,7 +26,7 @@ namespace graph {
 
 namespace abstract {
 
-// imput info in C module
+// C - module For sending signals and copying data outside the neuron
 template <typename C>
 class Neuron {
     public:
@@ -27,7 +41,7 @@ class Neuron {
         std::size_t layer_id_;
         std::size_t neuron_id_;
         std::vector<std::pair<float, Neuron<C>>> children_;  // w
-        std::vector<std::pair<float, Neuron<C>>> prev_w_children_;
+        std::vector<std::pair<float, Neuron<C>>> prev_w_children_;  // w
         
 };
 
