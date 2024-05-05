@@ -5,6 +5,8 @@
 #include "../../support_functions/update_weight.h"
 
 
+// раставить как в хедере
+
 namespace mlp {
 
 namespace graph {
