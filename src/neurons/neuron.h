@@ -2,7 +2,7 @@
 #define MLP_GRAPH_NEURONS_NEURON_H_
 
 
-/* -----------==============================-------------
+/* ==================================================================
 This is an abstract class for a neuron 
 containing a common implementation for derived classes
 
@@ -19,31 +19,22 @@ Forbidden for rewriting in derived classes
 
 private fields:
 neuron_type_ - the field for determining which type a given neuron belongs to
---------------==============================---------- */
+==================================================================*/
+
+#include <vector>
 
 
-#include "../../support_functions/update_weight.h"
+#include "weights/weight.h"
+#include "../auxiliary_modules/training_parameters.h"
 
 
 namespace mlp {
 
 namespace graph {
 
+template <typename T>
 class Neuron {
     public:
-        Neuron() = default;
-        explicit Neuron(std::size_t &neurol_id, std::size_t &layer_id, WeightHandler *ready_module);
-        ~Neuron() = default;
-
-        virtual void AddParents(std::size_t &number_of_parent, Neuron &first_parent);
-        virtual void AddChilds(std::size_t &number_of_children, Neuron &first_child);
-        virtual void AddAbove(Neuron first_child);
-        virtual void AddBelow(Neuron first_child);
-
-        virtual void set_output_value(float &output);
-        virtual float get_output_value();
-
-    protected:
         enum TypeNeuron {
             Input,
             Intermediate,
@@ -51,43 +42,55 @@ class Neuron {
             None
         };
 
-        float output_value_{0.0};  // o
-
-        Neuron *above{nullptr};
-        Neuron *below{nullptr};
-
-        WeightHandler *weight_tools{nullptr};
-
-        std::vector<std::pair<float, Neuron<C>*>> parents;
-        std::vector<std::pair<float*, Neuron<C>*>> childrens;
-
-
-        virtual std::size_t get_layer_id();
-        virtual std::size_t get_neuron_id();
-        virtual TypeNeuron get_neuron_type();
-
-        virtual void set_layer_id();
-        virtual void set_neuron_id();
-        virtual void set_neuron_type(TypeNeuron type);
+        Neuron(std::size_t &neurol_id, std::size_t &layer_id, mlp::TrainingParameters &learning_parametrs);
         
+        // void SetType() Добавить оператор для типа
+        void SetFirstValue(float &output);
+        void ComputeOutput();
+        void AddUpperNeuron(Neuron<T> &other);
+        void AddLowerNeuron(Neuron<T> &other);
+        void AddChainChildNeurons(Neuron<T> &other);
 
+        void AllReconnection();
     private:
+        using Numeric = T
         std::size_t layer_id_;
         std::size_t neuron_id_;
 
-        TypeNeuron neuron_type_ = TypeNeuron::None;
+        float error_{0.0};
+        float output_{0.0};
+
+        Neuron<T> upper_ = nullptr;
+        Neuron<T> lower_ = nullptr;
+        TypeNeuron type_ = TypeNeuron::None;
+        std::vector<std::pair<Weight<T>, Neuron<T>*>> parents_;
+        std::vector<std::pair<Weight<T>*, Neuron<T>*>> childs_;
+        mlp::TrainingParameters *learning_parametrs_ = nullptr;
 
         void CheckExceptNoneType();
         void CheckExceptInputType();
         void CheckExceptOutputType();
         void CheckExceptIntermediateType();
+        void CheckOtherNeuron(Neuron<T> &other);
+        void CreatingNetworkBetweenParent(Neuron<T> *parrent_neuron);
+        Neuron SwitchingToTheUpperNeuron(Neuron<T> &other);
 
+        // may be in future
+        // void AddUpperNeurons(Neuron<T> &other); для вставки цепочки нейронов
+        // void AddLowerNeurons(Neuron<T> &other); для вставки цепочки нейронов
+        // void AddChainParentNeurons(Neuron<T> &other); // добавить родителей (обратное ребенку)
+        // void RenumberingNeuronId(); // перенумерация
+        // void UpdateAllConnection
+        // Weight& operator=(mlp::TrainingParameters &learning_parametrs); добавить операторы
 
 };  // Neuron
 
 }  // graph
 
 }  // mlp
+
+
+#include "neuron.tpp"
 
 
 #endif //  MLP_GRAPH_NEURONS_NEURON_H_
