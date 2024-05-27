@@ -3,22 +3,17 @@
 
 
 /* ==================================================================
-This is an abstract class for a neuron 
-containing a common implementation for derived classes
+Class Neuron
 
 In the Neuron class:
 public:
 
 protected fields:
-o (output_value_) - the output value of the neuron
-TypeNeuron - all possible types of neurons
 
 protedted funcions:
-Contain two getters and a setter for setting the type of neuron.
-Forbidden for rewriting in derived classes
 
 private fields:
-neuron_type_ - the field for determining which type a given neuron belongs to
+
 ==================================================================*/
 
 #include <vector>
@@ -43,15 +38,17 @@ class Neuron {
         };
 
         Neuron(std::size_t &neurol_id, std::size_t &layer_id, mlp::TrainingParameters &learning_parametrs);
-        
-        // void SetType() Добавить оператор для типа
-        void SetFirstValue(float &output);
+
+        void SetType(TypeNeuron &type);
+        void SetInputValue(float &output);
         void ComputeOutput();
         void AddUpperNeuron(Neuron<T> &other);
         void AddLowerNeuron(Neuron<T> &other);
         void AddChainChildNeurons(Neuron<T> &other);
-
         void AllReconnection();
+        const float& GetError();
+        const float& GetOutputValue();
+        std::vector<std::pair<Weight<T>, Neuron<T>*>>& GetLinks();
     private:
         using Numeric = T
         std::size_t layer_id_;
@@ -82,7 +79,6 @@ class Neuron {
         // void RenumberingNeuronId(); // перенумерация
         // void UpdateAllConnection
         // Weight& operator=(mlp::TrainingParameters &learning_parametrs); добавить операторы
-
 };  // Neuron
 
 }  // graph

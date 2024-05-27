@@ -19,7 +19,12 @@ Neuron<T>::Neuron(std::size_t &neurol_id, std::size_t &layer_id, mlp::TrainingPa
 }
 
 template <typename T>
-void Neuron<T>::SetFirstValue(float &output) {
+void Neuron<T>::SetType(TypeNeuron &type) {
+    type_ = type;
+}
+
+template <typename T>
+void Neuron<T>::SetInputValue(float &output) {
     CheckExceptNoneType();
     CheckExceptOutputType();
     CheckExceptIntermediateType();
@@ -28,6 +33,7 @@ void Neuron<T>::SetFirstValue(float &output) {
 
 template <typename T>
 void Neuron<T>::ComputeOutput() {
+    ExceptInputType();
     if (type_ ==  TypeNeuron::Input) {
         childs_[0].second -> ComputeOutput();
     } else {
@@ -75,7 +81,8 @@ void Neuron<T>::AddLowerNeuron(Neuron<T> &other) {
 }
 
 template <typename T>
-void AddChainChildNeurons(Neuron<T> &other) {
+void Neuron<T>::AddChainChildNeurons(Neuron<T> &other) {
+    ExceptOutputType();
     Neuron<T> *child_neuron = SwitchingToTheUpperNeuron(other);
     Neuron<T> *first_this_neuron = SwitchingToTheUpperNeuron(this);
     for (child_neuron != nullptr) {
@@ -84,10 +91,28 @@ void AddChainChildNeurons(Neuron<T> &other) {
     }
 }
 
-// template <typename T>
-// void AddParrentChildNeurons(Neuron<T> &other) {
+template <typename T>
+void Neuron<T>::AllReconnection() {
+    Neuron<T> *neuron_ = nullptr;
+    
+}
 
-// }
+
+template <typename T>
+const float& Neuron<T>::GetError() {
+    return error_;
+}
+
+template <typename T>
+const float& Neuron<T>::GetOutputValue() {
+    return output_;
+}
+
+template <typename T>
+std::vector<std::pair<Weight<T>, Neuron<T>*>>& Neuron<T>::GetParentLinks() {
+    ExceptInputType();
+    return parents_;
+}
 
 template <typename T>
 void Neuron<T>::CheckExceptNoneType() {
