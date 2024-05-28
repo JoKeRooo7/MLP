@@ -122,7 +122,7 @@ void Neuron<T>::AllReconnection() {
     }
     Neuron<T> *temp_neuron = nullptr;
     do {
-        temp_neuron = &(*neuron -> childs_[0].second);
+        temp_neuron = neuron -> childs_[0].second;
         neuron -> childs_.clear();
         temp_neuron -> parents_.clear();
         neuron -> AddChainChildNeurons(temp_neuron);

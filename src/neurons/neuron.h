@@ -52,7 +52,7 @@ class Neuron {
         const float& GetOutputValue();
         std::vector<std::pair<Weight<T>, Neuron<T>*>>& GetLinks();
 
-        checking for created connections
+        // checking for created connections - добавить на проверку всех соединений? нужно в перцептрон
     private:
         using Numeric = T
         std::size_t layer_id_;
@@ -77,7 +77,8 @@ class Neuron {
         void CreatingNetworkBetweenParent(Neuron<T> *parrent_neuron);
         Neuron& SwitchingToTheUpperNeuron(Neuron<T> &other);
 
-        // debug
+
+        // debug - внести где переключаются на ветки для заиты от segmentation fault
         void CheckEmptyChildtLayer(Neuron<T> *neuron);
         void CheckEmptyParentLayer(Neuron<T> *neuron);
         // Neuron& ReturnFirstInputNeuron(Neuron<T> &current_neuron);
