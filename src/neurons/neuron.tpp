@@ -59,13 +59,16 @@ template <typename T>
 void Neuron<T>::ComputeAllOutput() {
     Neuron<T> *neuron = this;
     if (neuron -> type_ == TypeNeuron::Input) {
+        CheckEmptyChildtLayer(neuron);
         neuron = neuron -> childs_[0].second;
-    }
-    while (neuron -> parent[0].second -> type_ != nullptr) {
+    } 
+    while (neuron -> parent[0].second -> type_ != TypeNeuron::Input) {
+        CheckEmptyParentLayer(neuron);
         neuron = neuron -> parent[0].second;
-    }
+    } 
     do {
         neuron -> ComputeChainOutput();
+        CheckEmptyChildtLayer(neuron);
         neuron = neuron -> childs_[0].second;
     } while (neuron -> type_ != TypeNeuron::Output);
 }
@@ -122,12 +125,13 @@ void Neuron<T>::AllReconnection() {
     }
     Neuron<T> *temp_neuron = nullptr;
     do {
+        CheckEmptyChildtLayer(neuron);
         temp_neuron = neuron -> childs_[0].second;
         neuron -> childs_.clear();
         temp_neuron -> parents_.clear();
         neuron -> AddChainChildNeurons(temp_neuron);
         neuron = neuron -> childs_[0].second;
-    } while (*neuron -> hilds_[0].second.type_  != TypeNeuron::Output);
+    } while (*neuron -> childs_[0].second -> type_  != TypeNeuron::Output);
 }
 
 template <typename T>
@@ -223,6 +227,6 @@ Neuron<T>& Neuron<T>::SwitchingToTheUpperNeuron(Neuron<T> &other) {
 }
 
 
-}  // grpah
+}  // graph
 
 }  // mlp
