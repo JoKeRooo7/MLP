@@ -38,7 +38,7 @@ class Neuron {
         };
 
         Neuron(std::size_t &neurol_id, std::size_t &layer_id, mlp::TrainingParameters &learning_parametrs);
-
+Í
         void SetType(TypeNeuron &type);
         void SetInputValue(float &output);
         void ComputeOutput();
@@ -47,12 +47,13 @@ class Neuron {
         void AddUpperNeuron(Neuron<T> &other);
         void AddLowerNeuron(Neuron<T> &other);
         void AddChainChildNeurons(Neuron<T> &other);
+        void CheckingForCreatedConnections();
         void AllReconnection();
+        void RenumberingNeurons();
         const float& GetError();
         const float& GetOutputValue();
         std::vector<std::pair<Weight<T>, Neuron<T>*>>& GetLinks();
 
-        // checking for created connections - добавить на проверку всех соединений? нужно в перцептрон
     private:
         using Numeric = T
         std::size_t layer_id_;
@@ -71,27 +72,26 @@ class Neuron {
         void CheckExceptNoneType();
         void CheckExceptInputType();
         void CheckExceptOutputType();
+        void ConnectionBetweenChild();
+        void ConnectionBetweenParent();
         void CheckExceptIntermediateType();
         void CheckOtherNeuron(Neuron<T> &other);
-
-        void CreatingNetworkBetweenParent(Neuron<T> *parrent_neuron);
-        Neuron& SwitchingToTheUpperNeuron(Neuron<T> &other);
-
-
-        // debug - внести где переключаются на ветки для заиты от segmentation fault
-        void CheckEmptyChildtLayer(Neuron<T> *neuron);
+        void CheckEmptyChildLayer(Neuron<T> *neuron);
         void CheckEmptyParentLayer(Neuron<T> *neuron);
-        // Neuron& ReturnFirstInputNeuron(Neuron<T> &current_neuron);
+        void CreatingNetworkBetweenParent(Neuron<T> *parrent_neuron);
+        Neuron* SwitchingToTheUpperNeuron(Neuron<T> *other);
+        Neuron* ReturnFirstInputNeuron(Neuron<T> *current_neuron);
+        Neuron* ReturnFirstOutputNeuron(Neuron<T> *current_neuron);
+
         // Neuron& ReturnFirstOutputNeuron(Neuron<T> &current_neuron);
         // Neuron& ReturnLastOutputNeurom(Neuron<T> &current_neuron);
- 
         // may be in future
+        // Добавить автоматическое определение типа слоя
         // void AddUpperNeurons(Neuron<T> &other); для вставки цепочки нейронов
         // void AddLowerNeurons(Neuron<T> &other); для вставки цепочки нейронов
         // void AddChainParentNeurons(Neuron<T> &other); // добавить родителей (обратное ребенку)
-        // void RenumberingNeuronId(); // перенумерация
-        // void UpdateAllConnection
         // Weight& operator=(mlp::TrainingParameters &learning_parametrs); добавить операторы
+
 };  // Neuron
 
 }  // graph

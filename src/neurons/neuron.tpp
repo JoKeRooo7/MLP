@@ -59,16 +59,13 @@ template <typename T>
 void Neuron<T>::ComputeAllOutput() {
     Neuron<T> *neuron = this;
     if (neuron -> type_ == TypeNeuron::Input) {
-        CheckEmptyChildtLayer(neuron);
+        CheckEmptyChildLayer(neuron);
         neuron = neuron -> childs_[0].second;
     } 
-    while (neuron -> parent[0].second -> type_ != TypeNeuron::Input) {
-        CheckEmptyParentLayer(neuron);
-        neuron = neuron -> parent[0].second;
-    } 
+    neuron = ReturnFirstInputNeuron(neuron);
     do {
         neuron -> ComputeChainOutput();
-        CheckEmptyChildtLayer(neuron);
+        CheckEmptyChildLayer(neuron);
         neuron = neuron -> childs_[0].second;
     } while (neuron -> type_ != TypeNeuron::Output);
 }
@@ -117,6 +114,12 @@ void Neuron<T>::AddChainChildNeurons(Neuron<T> &other) {
 }
 
 template <typename T>
+void Neuron<T>::CheckingForCreatedConnections() {
+    ConnectionBetweenChild();
+    ConnectionBetweenParent();
+}
+
+template <typename T>
 void Neuron<T>::AllReconnection() {
     Neuron<T> *neuron = this;
     while (neuron -> type_ != TypeNeuron::Input) {
@@ -125,7 +128,7 @@ void Neuron<T>::AllReconnection() {
     }
     Neuron<T> *temp_neuron = nullptr;
     do {
-        CheckEmptyChildtLayer(neuron);
+        CheckEmptyChildLayer(neuron);
         temp_neuron = neuron -> childs_[0].second;
         neuron -> childs_.clear();
         temp_neuron -> parents_.clear();
@@ -133,6 +136,22 @@ void Neuron<T>::AllReconnection() {
         neuron = neuron -> childs_[0].second;
     } while (*neuron -> childs_[0].second -> type_  != TypeNeuron::Output);
 }
+
+template <typename T>
+void Neuron<T>::RenumberingNeurons() {
+    Neuron<T> *neuron = ReturnFirstInputNeuron(this);
+
+    for (std::size_t id = 1, layer_id = 1; neuron != nullptr; id = 1, ++layer_id) {
+        while (neuron -> lower_ != nullptr) {
+            neuron -> layer_id_ = layer_id;
+            neuron -> neuron_id_ = id++; 
+            neuron = neuron -> lower_;
+        }
+
+        neuron = neuron -> child[0].second;
+    }
+}
+
 
 template <typename T>
 const float& Neuron<T>::GetError() {
@@ -158,23 +177,66 @@ void Neuron<T>::CheckExceptNoneType() {
 }
 
 template <typename T>
-void Neuron<T>::ExceptInputType() {
+void Neuron<T>::CheckExceptInputType() {
     if (type_ == TypeNeuron::Input) {
         throw std::logic_error("you cannot perform an action in this type (Input) of neuron");
     }
 }
 
 template <typename T>
-void Neuron<T>::ExceptInputType() {
+void Neuron<T>::CheckExceptOutputType() {
     if (type_ == TypeNeuron::Output) {
         throw std::logic_error("you cannot perform an action in this type (Output) of neuron");
     }
 }
 
 template <typename T>
-void Neuron<T>::ExceptOutputType() {
+void Neuron<T>::CheckExceptIntermediateType() {
     if (type_ == TypeNeuron::Intermediate) {
         throw std::logic_error("you cannot perform an action in this type (Intermediate) of neuron");
+    }
+}
+
+template <typename T>
+void Neuron<T>::ConnectionBetweenChild() {
+    Neuron<T> *neuron = ReturnFirstInputNeuron(this);
+    for (std::size_t i = 1; neuron -> type_ != TypeNeuron::Output; i = 1) {
+        while (neuron -> lower_ != nullptr) {
+            neuron = neuron -> lower_;
+            ++i;
+
+        }
+        for (std::size_t j = 0; j < neuron -> child.size(); ++j) {
+            if (neuron -> child[j].second -> parent.size() != i) {
+                throw std::logic_error("the size does not match between: " +
+                "layer: " + std::to_string(neuron -> layer_id_) +
+                "layer: " + std::to_string(neuron -> child[j].second -> layer_id_) +
+                "id: " + std::to_string(neuron -> neuron_id_) +
+                "id: " + std::to_string(neuron -> child[j].second -> neuron_id_));
+            }
+        }
+        neuron = neuron -> child[0].second;
+    }
+}
+
+template <typename T>
+void Neuron<T>::ConnectionBetweenParent() {
+    Neuron<T> *neuron = ReturnFirstOutputNeuron(this);
+    for (std::size_t i = 1; neuron -> type_ != TypeNeuron::Input; i = 1) {
+        while (neuron -> lower_ != nullptr) {
+            neuron = neuron -> lower_;
+            ++i;
+        }
+        for (std::size_t j = 0; j < neuron -> parent.size(); ++j) {
+            if (neuron -> parent[j].second -> child.size() != i) {
+                throw std::logic_error("the size does not match between: " +
+                "layer: " + std::to_string(neuron -> layer_id_) +
+                "layer: " + std::to_string(neuron -> parent[j].second -> layer_id_) +
+                "id: " + std::to_string(neuron -> neuron_id_) +
+                "id: " + std::to_string(neuron -> parent[j].second -> neuron_id_))
+            }
+        }
+        neuron = neuron -> parent[0].second;
     }
 }
 
@@ -189,10 +251,11 @@ void Neuron<T>::CheckOtherNeuron(Neuron<T> &other) {
 }
 
 template <typename T>
-void Neuron<T>::CheckEmptyChildtLayer(Neuron<T> *neuron) {
+void Neuron<T>::CheckEmptyChildLayer(Neuron<T> *neuron) {
     if (neuron -> childs_.size() == 0) {
       throw std::length_error("The layer to switch to is empty, id: " +
-        + std::to_string(neuron -> neurol_id_) + "layer" + std::to_string(neuron -> layer_id_));
+        + std::to_string(neuron -> neurol_id_) + "layer: "  + 
+        std::to_string(neuron -> layer_id_));
     }
 }
 
@@ -200,10 +263,10 @@ template <typename T>
 void Neuron<T>::CheckEmptyParentLayer(Neuron<T> *neuron) {
     if (neuron -> parents_.size() == 0) {
         throw std::length_error("The layer to switch to is empty, id: " +
-        + std::to_string(neuron -> neurol_id_) + "layer" + std::to_string(neuron -> layer_id_));
+        + std::to_string(neuron -> neurol_id_) + "layer: " + 
+        std::to_string(neuron -> layer_id_));
     }
 }
-
 
 template <typename T>
 void Neuron<T>::CreatingNetworkBetweenParent(Neuron<T> *parrent_neuron) {
@@ -218,12 +281,37 @@ void Neuron<T>::CreatingNetworkBetweenParent(Neuron<T> *parrent_neuron) {
 }
 
 template <typename T>
-Neuron<T>& Neuron<T>::SwitchingToTheUpperNeuron(Neuron<T> &other) {
-    Neuron<T>* result = &other;
+Neuron<T>* Neuron<T>::SwitchingToTheUpperNeuron(Neuron<T> *other) {
+    Neuron<T>* result = other;
     while (result -> upper_ != nullptr) {
         result = result -> upper_;
     }
     return result;
+}
+
+template <typename T>
+Neuron* Neuron<T>::ReturnFirstInputNeuron(Neuron<T> *current_neuron) {
+    Neuron<T> *neuron = current_neuron;
+    if (neuron -> type_ != TypeNeuron::Input) {
+        do {
+            CheckEmptyChildLayer(neuron);
+            neuron = neuron -> parent[0].second;
+        } while (neuron -> type_ != TypeNeuron::Input);
+    }
+    return neuron;
+}
+
+template <typename T>
+Neuron* Neuron<T>::ReturnFirstOutputNeuron(Neuron<T> *current_neuron) {
+    Neuron<T> *neuron = current_neuron;
+    if (neuron -> type_ != TypeNeuron::Output) {
+        do {
+            CheckEmptyChildLayer(neuron);
+            neuron = neuron -> child[0].second;
+        } while (neuron -> type_ != TypeNeuron::Output);
+    }
+
+    return neuron;
 }
 
 
