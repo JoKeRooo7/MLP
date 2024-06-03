@@ -38,12 +38,8 @@ class Weight {
         const float *GetWeight();
         const float *Value();
     private:
-        if constexpr (!std::is_arithmetic<T>::value) {
-            throw std::invalid_argument("The type in the scale is not numerical");
-        }
         using Numeric = T;
-
-        Numeric value_{0};
+        Numeric value_;
         Numeric delta_prev_value_{0};
         mlp::TrainingParameters *learning_parametrs_ = nullptr;
 

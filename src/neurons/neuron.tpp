@@ -138,16 +138,17 @@ void Neuron<T>::AllReconnection() {
 }
 
 template <typename T>
-void Neuron<T>::RenumberingNeurons() {
+void Neuron<T>::RenumberingNeurons(bool change_type=false) {
     Neuron<T> *neuron = ReturnFirstInputNeuron(this);
 
-    for (std::size_t id = 1, layer_id = 1; neuron != nullptr; id = 1, ++layer_id) {
+    for (std::size_t id = 1, layer_id = 1; neuron -> child[0].size() != 0; id = 1, ++layer_id) {
         while (neuron -> lower_ != nullptr) {
+            if (change_type) ChangeNeuronType(neuron);
             neuron -> layer_id_ = layer_id;
             neuron -> neuron_id_ = id++; 
             neuron = neuron -> lower_;
         }
-
+        // sega
         neuron = neuron -> child[0].second;
     }
 }
@@ -314,6 +315,16 @@ Neuron* Neuron<T>::ReturnFirstOutputNeuron(Neuron<T> *current_neuron) {
     return neuron;
 }
 
+template <typename T>
+void Neuron<T>::ChangeNeuronType(Neuron<T> *current_neuron) {
+    if (neuron -> child[0].size() == 0) {
+        neuron -> type_ = TypeNeuron::Input;
+    } else if (layer_id == 1) {
+        neuron -> type_ = TypeNeuron::Output;
+    } else {
+        neuron -> type_ = TypeNeuron::Intermediate;
+    }
+}
 
 }  // graph
 

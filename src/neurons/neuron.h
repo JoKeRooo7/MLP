@@ -41,7 +41,7 @@ class Neuron {
 Í
         void SetType(TypeNeuron &type);
         void SetInputValue(float &output);
-        void ComputeOutput();
+        void ComputeOutput(); 
         void ComputeChainOutput();
         void ComputeAllOutput();
         void AddUpperNeuron(Neuron<T> &other);
@@ -49,7 +49,9 @@ class Neuron {
         void AddChainChildNeurons(Neuron<T> &other);
         void CheckingForCreatedConnections();
         void AllReconnection();
-        void RenumberingNeurons();
+        // Добавить логику обновление весов и подсчета ошибки
+        // Добавить автоматическое определение типа слоя
+        void RenumberingNeurons(bool change_type=false);
         const float& GetError();
         const float& GetOutputValue();
         std::vector<std::pair<Weight<T>, Neuron<T>*>>& GetLinks();
@@ -78,6 +80,7 @@ class Neuron {
         void CheckOtherNeuron(Neuron<T> &other);
         void CheckEmptyChildLayer(Neuron<T> *neuron);
         void CheckEmptyParentLayer(Neuron<T> *neuron);
+        void ChangeNeuronType(Neuron<T> *current_neuron);
         void CreatingNetworkBetweenParent(Neuron<T> *parrent_neuron);
         Neuron* SwitchingToTheUpperNeuron(Neuron<T> *other);
         Neuron* ReturnFirstInputNeuron(Neuron<T> *current_neuron);
@@ -86,10 +89,10 @@ class Neuron {
         // Neuron& ReturnFirstOutputNeuron(Neuron<T> &current_neuron);
         // Neuron& ReturnLastOutputNeurom(Neuron<T> &current_neuron);
         // may be in future
-        // Добавить автоматическое определение типа слоя
         // void AddUpperNeurons(Neuron<T> &other); для вставки цепочки нейронов
         // void AddLowerNeurons(Neuron<T> &other); для вставки цепочки нейронов
-        // void AddChainParentNeurons(Neuron<T> &other); // добавить родителей (обратное ребенку)
+        // добавить родителей (обратное ребенку)
+        // void AddChainParentNeurons(Neuron<T> &other); 
         // Weight& operator=(mlp::TrainingParameters &learning_parametrs); добавить операторы
 
 };  // Neuron
