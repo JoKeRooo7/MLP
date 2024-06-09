@@ -22,7 +22,7 @@ private fields:
 #include "weights/weight.h"
 #include "../auxiliary_modules/training_parameters.h"
 
-
+// нужен модуль для созадния input и сбор output
 namespace mlp {
 
 namespace graph {
