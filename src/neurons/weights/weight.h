@@ -16,9 +16,8 @@ of each neuron's day weight, as well as its previous values.
 In the Weight class:
 
 private fields:
-w (value_) - weight between other neurons
-w_(x-1) (prev_value_) - previous weight value
-dw (delta_weight) - weight between other neurons
+
+
 ================================================================== */
 
 
@@ -33,23 +32,24 @@ class Weight {
         Weight(mlp::TrainingParameters &learning_parametrs);
         Weight& operator=(mlp::TrainingParameters &learning_parametrs);
 
-        void UpdateWeight(float &error_value, float &output);
-
-        const float *GetWeight();
-        const float *Value();
+        template <typename X,typename Y>
+        void UpdateWeight(X &error_value, Y &output);
+        
+        const T *GetWeight();
+        const T *Value();
     private:
-        using Numeric = T;
-        Numeric value_;
-        Numeric delta_prev_value_{0};
+        T value_;
+        T delta_prev_value_{0};
         mlp::TrainingParameters *learning_parametrs_ = nullptr;
 
+        template <typename C>
+        void CheckNumericType();
         void InitWeitght();
+};  // class Weight
 
-};  // Weight
+}  // namespace graph
 
-}  // graph
-
-}  // mlp
+}  // namespace mlp
 
 
 #include "weight.tpp"

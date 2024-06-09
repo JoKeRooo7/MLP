@@ -1,6 +1,6 @@
 COMPILER = gcc
 COMPILER_FLAGS = -Wall -Werror -Wextra -g -std=c++17
-LIBRARIES = -lgtest, -lgtest_main -lstdc++
+LIBRARIES = -lgtest -lgtest_main -lstdc++
 
 CC = $(COMPILER) $(COMPILER_FLAGS)
 LIB = $(LIBRARIES)
