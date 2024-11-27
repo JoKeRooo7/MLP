@@ -38,7 +38,7 @@ class Neuron {
         };
 
         Neuron(std::size_t &neurol_id, std::size_t &layer_id, mlp::TrainingParameters &learning_parametrs);
-Í
+
         void SetType(TypeNeuron &type);
         void SetInputValue(float &output);
         void ComputeOutput(); 
@@ -57,7 +57,7 @@ class Neuron {
         std::vector<std::pair<Weight<T>, Neuron<T>*>>& GetLinks();
 
     private:
-        using Numeric = T
+        // using Numeric = T
         std::size_t layer_id_;
         std::size_t neuron_id_;
 
