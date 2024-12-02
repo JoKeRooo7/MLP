@@ -16,12 +16,11 @@ namespace mlp {
         public:
             InputNeuron();
             InputNeuron(std::size_t id, std::size_t layer_id);
-
-
-            // add value
-            // void AddChilNeuron();
-            // void AddUpperNeuron(Neuron *other_neuron) override;
-            // void AddLowerNeuron(Neuron *other_neuron) override;
+            void AddOutput(float value);
+            // void AddParrentNeuron() - not need
+            void AddChildNeuron(Neuron *child_neuron) override;
+            void AddUpperNeuron(Neuron *upper_neuron) override;
+            void AddLowerNeuron(Neuron *lower_neuron) override;
             // void ComputeOutput(); 
             // void ComputeChainOutput();
             // void ComputeAllOutput();
@@ -34,7 +33,8 @@ namespace mlp {
             Neuron *upper_neuron_ = nullptr;
             Neuron *lower_neuron_ = nullptr;
 
-            std::vector<Edge> edges;
+            std::vector<Edge> parent_edges_;
+            std::vector<Edge> child_edges_;
             // float error_{0,0};
 
     }; // InputNeuron
