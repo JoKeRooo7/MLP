@@ -5,10 +5,12 @@
 
 namespace mlp {
 
+
     Weight::Weight(float *k_inertia, float *move_step) {
         coefficient_of_inertia_= k_inertia;
         step_of_movement_ = move_step;
     }
+
 
     void Weight::UpdateWeight(float value, float error) {
         // Δwij​(n)=αΔwij​(n−1)
@@ -19,6 +21,12 @@ namespace mlp {
         // wij​(n)=wij​(n−1)−Δwij​(n),
         value_ = value_ - delta_prev_value_;
     }
+
+
+    float value() {
+        return value_;
+    }
+
 
     void Weight::InitWeitght() {
         std::random_device rd;

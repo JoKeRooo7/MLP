@@ -17,6 +17,9 @@ namespace mlp {
             Edge(Neuron *left_neuron, Neuron *right_neuron);
             void AddLeftNeuron(Neuron *left_neuron);
             void AddRightNeuron(Neufon *right_neuron);
+            const float& GetWeight();
+            const float&  GetLeftOutput();
+            const float&  GetRightOutput();
             // TODO - add UPDATE WEIGHT
             // TODO - add calculcate error
             // TODO -  add lear
