@@ -13,7 +13,7 @@ namespace mlp {
         private:
             float value_;
             float delta_prev_value_{0};
-            float *coefficient_of_inertia_ = nullptr;
+            float *coefficient_of_inertia_ =  nullptr;
             float *step_of_movement_ = nullptr;
 
             void InitWeight();
