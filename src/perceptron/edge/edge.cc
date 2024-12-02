@@ -28,6 +28,21 @@ namespace mlp {
     }
 
     template <typename W>
+    const float& Edge<W>::GetWeight() {
+        return this_weight_.value;
+    }
+
+    template <typename W>
+    const float& GetLeftOutput() {
+        return left_neuron_ -> GetOutput();
+    }
+
+    template <typename W>
+    const float& GetRightOutput() {
+        return right_neuron_ -> GetOutput();
+    }
+
+    template <typename W>
     Edge<W>::~Edge() {
         *left_neuron_ = nullptr;
         *right_neuron_ = nullptr;
