@@ -9,8 +9,9 @@ namespace mlp {
         public:
             Weight(float *k_inertia, float *move_step);
 
+            // void Reset();
             void UpdateWeight(float value, float error);
-            float value(); // function get with google style
+            float GetWeight(); // function get with google style
 
         private:
             float value_;
