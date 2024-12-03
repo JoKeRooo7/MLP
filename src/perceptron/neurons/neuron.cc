@@ -1,7 +1,8 @@
-#include "template_neuron.h"
+#include "neuron.h"
 #include "../functions/activate_function.h"
 #include "../edge/edge.h"
 #include <cstddef>  // size_t
+#include <exception>
 
 
 namespace mlp {
@@ -63,6 +64,16 @@ namespace mlp {
         while (neuron != nullptr) {
             neuron -> ComputeOutput();
             neuron = neuron -> lower_;
+        }
+    }
+
+
+    void Neuron::ComputeAllOutput() {
+        ComputeChainOutput();
+        if (child_edges_.size() > 0) {
+             child_edges_[0].ComputeAllOutput();
+        } else {
+            std::throw out_of_range("Edge not found");
         }
     }
 

@@ -1,5 +1,5 @@
-#ifndef MLP_PERCEPTRON_NEURONS_TEMPLATE_NEURON_H_
-#define MLP_PERCEPTRON_NEURONS_TEMPLATE_NEURON_H_
+#ifndef MLP_PERCEPTRON_NEURONS_NEURON_H_
+#define MLP_PERCEPTRON_NEURONS_NEURON_H_
 
 
 #include <cstddef>  // size_t
@@ -24,14 +24,12 @@ namespace mlp {
             void AddLowerNeuron(Neuron *lower_neuron) override;
             void ComputeOutput();
             void ComputeChainOutput();
-
-
             const float& GetOutput();
-
             const std::size_t& id();
             const std::size_t& layer_id();
              // void ComputeChainOutput();
             // void ComputeAllOutput(); TODO In Edge add getter for neuron. 
+            // TODO Update Weight
 
         private:
             std::size_t id_;
@@ -50,4 +48,4 @@ namespace mlp {
 }  // mlp
 
 
-#endif  //  MLP_PERCEPTRON_NEURONS_TEMPLATE_NEURON_H_
+#endif  // MLP_PERCEPTRON_NEURONS_NEURON_H_

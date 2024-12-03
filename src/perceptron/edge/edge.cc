@@ -28,6 +28,11 @@ namespace mlp {
     }
 
     template <typename W>
+    void Edge<W>::ComputeAllOutput() {
+        right_neuron_ -> ComputeAllOutput();
+    }
+
+    template <typename W>
     const float& Edge<W>::GetWeight() {
         return this_weight_.value;
     }
@@ -48,10 +53,10 @@ namespace mlp {
         *right_neuron_ = nullptr;
     }
 
-    template <typename W>
-    void Edge<W>::ResetWeight() {
-        this_weight_.Reset();
-    }
+    // template <typename W>
+    // void Edge<W>::ResetWeight() {
+    //     this_weight_.Reset();
+    // }
 
 
 }  // mlp
