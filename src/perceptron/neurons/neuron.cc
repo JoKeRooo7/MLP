@@ -20,33 +20,19 @@ namespace mlp {
     }
 
 
-    void Neuron::AddOutput(float value) {
-        output_ = value;
-    }
-
-
-    void Neuron::AddChildNeuron(Neuron *child_neuron) override {
-        Edge new_edge;
-        new_edge.AddLeftNeuron(this);
-        new_edge.AddRightNeuron(child_neuron);
-        child_neuron -> parent_edges_.pust_back(new_edge);
-        child_edges_.push_back(new_edge);
-    }
-
-
-    void Neuron::AddUpperNeuron(Neuron *upper_neuron) override {
+    void Neuron::AddUpperNeuron(Neuron *upper_neuron) {
         upper_neuron_ = upper_neuron;
         upper_neuron_.AddLowerNeuron(this);
     }
 
 
-    void Neuron::AddLowerNeuron(Neuron *lower_neuron) override {
+    void Neuron::AddLowerNeuron(Neuron *lower_neuron) {
         lower_neuron_ = lower_neuron;
         lower_neuron_.AddUpperNeuron(this);
     }
 
 
-    void Neuron::ComputeOutput() {
+    void Neuron::ComputeOutput() { // TODO change in input neuron
         for (size_t i = 0; i < parent_edges_.size(); ++i) {
             output_ += parent_edges_[i].GetWeight() * parent_edges_[i].GetLeftOutput();
         }
@@ -55,26 +41,33 @@ namespace mlp {
 
 
     void Neuron::ComputeChainOutput() {
-        Neuron *neuron = upper_;
-        while (neuron != nullptr) {
-            neuron -> ComputeOutput();
-            neuron = neuron -> upper_;
-        }
-        neuron = lower_;
-        while (neuron != nullptr) {
-            neuron -> ComputeOutput();
-            neuron = neuron -> lower_;
-        }
+        ComputeChainOut(this, &Neuron::upper_);
+        ComputeChainOut(lower_, &Neuron::lower_);
+        // Neuron *neuron = upper_;
+        // while (neuron != nullptr) {
+        //     neuron -> ComputeOutput();
+        //     neuron = neuron -> upper_;
+        // }
+        // neuron = lower_;
+        // while (neuron != nullptr) {
+        //     neuron -> ComputeOutput();
+        //     neuron = neuron -> lower_;
+        // }
     }
 
 
-    void Neuron::ComputeAllOutput() {
+    void Neuron::ComputeAllOutput() { // TODO Change in output neuron
         ComputeChainOutput();
         if (child_edges_.size() > 0) {
              child_edges_[0].ComputeAllOutput();
         } else {
             std::throw out_of_range("Edge not found");
         }
+    }
+
+
+    const float& Neuron::GetError() {
+        return error_;
     }
 
 
@@ -90,6 +83,111 @@ namespace mlp {
 
     const std::size_t& Neuron::layer_id() {
         return layer_id;
+    }
+
+
+    void Neuron::AddOutput(float value) { // TODO change in output and layer neuron
+        output_ = value;
+    }
+
+
+    void Neuron::AddChildNeuron(Neuron *child_neuron) { // TODO change in output neuron
+        Edge new_edge;
+        new_edge.AddLeftNeuron(this);
+        new_edge.AddRightNeuron(child_neuron);
+        child_neuron -> parent_edges_.pust_back(new_edge);
+        child_edges_.push_back(new_edge);
+    }
+
+    
+    virtual void ComputeError() { // TODO change in output  neuron
+        // δj​= oj * ​(1−oj​)​ * sun(δk * ​wjk​)
+        float all_sum{0.0};
+        for (std::size_t i = 0; i < child_edges_.size(); ++i) {
+            all_sum += child_edges_[i].GetWeight() * child_edges_[i].GetRightError();
+        }
+        error_ = output_ * (1 - output_) * all_sum; 
+    }
+
+
+    virtual void ComputeChainError() { // TODO change in input  neuron
+        ComputeChainErr(top_value, this, &Neuron::upper_);
+        ComputeChainErr(top_value, lower_, &Neuron::lower_);
+    }
+
+
+    virtual void ComputeAllError() { // TODO change in input  neuron
+        ComputeChainError();
+        if (parent_edges_.size() > 0) {
+            parent_edges_[0].ComputeAllError();
+        } else {
+            std::throw out_of_range("Edge not found");
+        }
+    }
+
+
+    float Neuron::GetTopCompute() {
+        float top_value{0.0};
+        GetTopInChain(top_value, this, &Neuron::upper_);
+        GetTopInChain(top_value, lower_, &Neuron::lower_);
+        return top_value;
+        // Neuron *neuron = upper_;
+        // while (neuron != nullptr) {
+        //     if (neuron -> output_ > top_value) {
+        //         top_value =  neuron -> output_;
+        //     }
+        //     neuron = neuron -> upper_;
+        // }
+        // neuron = lower_;
+        // while (neuron != nullptr) {
+        //     if (neuron -> output_ > top_value) {
+        //         top_value =  neuron -> output_; 
+        //     }
+        //     neuron -> ComputeOutput();
+        //     neuron = neuron -> lower_;
+        // }
+        // return top_value;
+    }
+
+    std::vector<float> GetAllCompute() {
+        std::vector<float> all_res;
+        Neuron *neuron = this;
+        while(neuron -> upper_ != nullptr) {
+            neuron = neuron -> upper_;
+        }
+        while(neuron -> lower_ != nullptr) {
+            all_res.push_back(neuron -> output_);
+            neuron = neuron -> lower_;
+        }
+        return all_res;
+    }
+
+
+    void Neuron::ComputeChainErr(Neuron* neuron, Neuron* (Neuron::*shift)) {
+        // проверить магию динамических указателей на поля класса
+        while (neuron != nullptr) {
+            neuron -> ComputeOutput();
+            neuron = neuron->*shift;
+        }
+    }
+
+
+    void Neuron::ComputeChainOut(Neuron* neuron, Neuron* (Neuron::*shift)) {
+        // проверить магию динамических указателей на поля класса
+        while (neuron != nullptr) {
+            neuron -> ComputeOutput();
+            neuron = neuron->*shift;
+        }
+    }
+
+
+    void Neuron::GetTopInChain(float &value, Neuron* neuron, Neuron* (Neuron::*shift)) {
+        while (neuron != nullptr) {
+            if (neuron -> output_ > value) {
+                value =  neuron -> output_;
+            }
+            neuron = neuron ->*shift;
+        }
     }
 
 

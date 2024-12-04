@@ -3,14 +3,14 @@
 
 
 #include "../neurons/template_neuron.h"
+#include "../weight/weight.h"
 
 
 namespace mlp {
 
-    template <typename W>
     class Edge {
         public:
-            using Weight = W;
+            // using Weight = W;
 
             Edge() = default;
             Edge(Neuron *left_neuron);
@@ -18,13 +18,16 @@ namespace mlp {
             void AddLeftNeuron(Neuron *left_neuron);
             void AddRightNeuron(Neufon *right_neuron);
             void ComputeAllOutput();
+            void ComputeAllError();
             const float& GetWeight();
             const float&  GetLeftOutput();
             const float&  GetRightOutput();
+            const float&  GetLeftError();
+            const float&  GetRightError();
             // TODO - add UPDATE WEIGHT
             // TODO - add calculcate error
             // TODO -  add lear
-            ~Edge();
+            // ~Edge();
         
         private:
             Neuron *left_neuron_ = nullptr;
