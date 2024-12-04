@@ -33,7 +33,7 @@ namespace mlp {
             Neuron *left_neuron_ = nullptr;
             Neuron *right_neuron_ = nullptr;
             Weight this_weight_;
-
+            // ??
             // void ResetWeight();
     };
 
