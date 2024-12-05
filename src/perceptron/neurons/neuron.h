@@ -30,6 +30,8 @@ namespace mlp {
             virtual void AddOutput(float value);
             virtual void AddChildNeuron(Neuron *child_neuron);
             virtual void UpdateWeight();
+            virtual void UpdateChainWeight();
+            virtual void UpdateAllWeight();
             virtual void ComputeOutput();
             virtual void ComputeChainOutput();
             virtual void ComputeAllOutput(); 
@@ -54,6 +56,7 @@ namespace mlp {
             std::vector<Edge> parent_edges_;
             std::vector<Edge> child_edges_;
 
+            void ComputeChainWeight(Neuron* neuron, Neuron* (Neuron::*shift));
             void ComputeChainErr(Neuron* neuron, Neuron* (Neuron::*shift));
             void ComputeChainOut(Neuron* neuron, Neuron* (Neuron::*shift));
             void GetTopInChain(float &value, Neuron* neuron, Neuron* (Neuron::*shift));

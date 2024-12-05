@@ -106,6 +106,21 @@ namespace mlp {
         }
     }
 
+    
+    void UpdateChainWeight() {
+        ComputeChainWeight(this, &Neuron::upper_);
+        ComputeChainWeight(lower_, &Neuron::lower_);
+    }
+
+
+    void Neuron::UpdateAllWeight() {  // TODO change in output neuron
+        UpdateChainWeight();
+        if (parent_edges_.size() > 0) {
+            parent_edges_[0].UpdateNextWeight();
+        } else {
+            std::throw out_of_range("Edge not found");
+        }
+    }
 
 
     void Neuron::ComputeError() { // TODO change in output  neuron
@@ -119,8 +134,8 @@ namespace mlp {
 
 
     void Neuron::ComputeChainError() { // TODO change in input  neuron
-        ComputeChainErr(top_value, this, &Neuron::upper_);
-        ComputeChainErr(top_value, lower_, &Neuron::lower_);
+        ComputeChainErr(this, &Neuron::upper_);
+        ComputeChainErr(lower_, &Neuron::lower_);
     }
 
 
@@ -171,10 +186,18 @@ namespace mlp {
     }
 
 
+    void ComputeChainWeight(Neuron* neuron, Neuron* (Neuron::*shift)) {
+        while (neuron != nullptr) {
+            neuron -> UpdateWeight();
+            neuron = neuron->*shift;
+        } 
+    }
+
+
     void Neuron::ComputeChainErr(Neuron* neuron, Neuron* (Neuron::*shift)) {
         // проверить магию динамических указателей на поля класса
         while (neuron != nullptr) {
-            neuron -> ComputeOutput();
+            neuron -> ComputeError();
             neuron = neuron->*shift;
         }
     }

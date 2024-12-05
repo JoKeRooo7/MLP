@@ -19,6 +19,8 @@ namespace mlp {
             void AddRightNeuron(Neufon *right_neuron);
             void ComputeAllOutput();
             void ComputeAllError();
+            void UpdateNextWeight();
+
             void UpdateWeight(float &output_, float &error_);
             const float& GetWeight();
             const float&  GetLeftOutput();
