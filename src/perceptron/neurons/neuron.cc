@@ -100,7 +100,15 @@ namespace mlp {
     }
 
     
-    virtual void ComputeError() { // TODO change in output  neuron
+    void Neuron::UpdateWeight() { // TODO change in input
+        for (std::size_t i = 0; i < parent_edges_.size(); ++i) {
+            parent_edges_[i].UpdateWeight(output_, error_);
+        }
+    }
+
+
+
+    void Neuron::ComputeError() { // TODO change in output  neuron
         // δj​= oj * ​(1−oj​)​ * sun(δk * ​wjk​)
         float all_sum{0.0};
         for (std::size_t i = 0; i < child_edges_.size(); ++i) {
@@ -110,13 +118,13 @@ namespace mlp {
     }
 
 
-    virtual void ComputeChainError() { // TODO change in input  neuron
+    void Neuron::ComputeChainError() { // TODO change in input  neuron
         ComputeChainErr(top_value, this, &Neuron::upper_);
         ComputeChainErr(top_value, lower_, &Neuron::lower_);
     }
 
 
-    virtual void ComputeAllError() { // TODO change in input  neuron
+    void Neuron::ComputeAllError() { // TODO change in input  neuron
         ComputeChainError();
         if (parent_edges_.size() > 0) {
             parent_edges_[0].ComputeAllError();

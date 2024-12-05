@@ -29,12 +29,13 @@ namespace mlp {
 
             virtual void AddOutput(float value);
             virtual void AddChildNeuron(Neuron *child_neuron);
-
+            virtual void UpdateWeight();
             virtual void ComputeOutput();
             virtual void ComputeChainOutput();
             virtual void ComputeAllOutput(); 
             virtual void ComputeError();
             virtual void ComputeChainError();
+            virtual void ComputeAllError();
             virtual float GetTopCompute();
             virtual std::vector<float> GetAllCompute();
 

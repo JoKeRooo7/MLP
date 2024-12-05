@@ -17,7 +17,7 @@ namespace mlp {
     // }
 
 
-    void Weight::UpdateWeight(float value, float error) {
+    void Weight::UpdateWeight(float &value, float &error) {
         // Δwij​(n)=αΔwij​(n−1)
         delta_prev_value_ = coefficient_of_inerti_a * delta_prev_value_;
         // Δwij​(n) += (1−α)ηδj​oi​

@@ -33,6 +33,14 @@ namespace mlp {
     }
 
 
+    void Edge::ComputeAllError() {
+        left_neuron_ -> ComputeAllError();
+    }
+
+    void Edge::UpdateWeight(float &output_, float &error_) {
+        this_weight_.UpdateWeight(output_, error_)
+    }
+
     const float& Edge::GetWeight() {
         return this_weight_.value;
     }
