@@ -12,7 +12,7 @@ namespace mlp {
         return 1 / (1 + std::exp(-x));
     }
 
-å
+
 }
 
 

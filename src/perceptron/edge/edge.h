@@ -2,46 +2,42 @@
 #define MLP_PERCEPTRON_EDGE_EDGE_H
 
 
-#include "../neurons/template_neuron.h"
 #include "../weight/weight.h"
 
 
 namespace mlp {
 
+
+    template<typename N>
     class Edge {
         public:
-            // using Weight = W;
+            using Neuron = N;
 
             Edge() = default;
             Edge(Neuron *left_neuron);
             Edge(Neuron *left_neuron, Neuron *right_neuron);
-            void AddLeftNeuron(Neuron *left_neuron);
-            void AddRightNeuron(Neufon *right_neuron);
-            void ComputeAllOutput();
-            void ComputeAllError();
-            void UpdateNextWeight();
 
+            // void ResetWeight();
+            void AddLeftNeuron(Neuron *left_neuron);
+            void AddRightNeuron(Neuron *right_neuron);
             void UpdateWeight(float &output_, float &error_);
             const float& GetWeight();
-            const float&  GetLeftOutput();
-            const float&  GetRightOutput();
-            const float&  GetLeftError();
-            const float&  GetRightError();
-            // TODO - add UPDATE WEIGHT
-            // TODO - add calculcate error
-            // TODO -  add lear
-            // ~Edge();
-        
+            N* GetLeftNeuron();
+            N* GetRightNeuron();
+
         private:
             Neuron *left_neuron_ = nullptr;
             Neuron *right_neuron_ = nullptr;
             Weight this_weight_;
-            // ??
-            // void ResetWeight();
+            
+
     };
 
 
 }  // mlp
+
+
+#include "edge.tpp"
 
 
 #endif  // MLP_PERCEPTRON_EDGE_EDGE_H

@@ -7,11 +7,12 @@ namespace mlp {
 
     class Weight {
         public:
+            Weight() = default;
             Weight(float *k_inertia, float *move_step);
 
             // void Reset();
             void UpdateWeight(float &value, float &error);
-            float GetWeight(); // function get with google style
+            const float& GetWeight();
 
         private:
             float value_;

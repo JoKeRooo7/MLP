@@ -19,21 +19,21 @@ namespace mlp {
 
     void Weight::UpdateWeight(float &value, float &error) {
         // Δwij​(n)=αΔwij​(n−1)
-        delta_prev_value_ = coefficient_of_inerti_a * delta_prev_value_;
+        delta_prev_value_ = *coefficient_of_inertia_ * delta_prev_value_;
         // Δwij​(n) += (1−α)ηδj​oi​
-        delta_prev_value_ += (1 - coefficient_of_inertia_) * \
-        step_of_movement_ * error_value * output;
+        delta_prev_value_ += (1 - *coefficient_of_inertia_) * \
+        *step_of_movement_ * error * value;
         // wij​(n)=wij​(n−1)−Δwij​(n),
         value_ = value_ - delta_prev_value_;
     }
 
 
-    float GetWeight() {
+    const float& Weight::GetWeight() {
         return value_;
     }
 
 
-    void Weight::InitWeitght() {
+    void Weight::InitWeight() {
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_real_distribution<float> dis(-0.001f, 0.001f);
