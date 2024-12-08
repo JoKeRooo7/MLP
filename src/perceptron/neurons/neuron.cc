@@ -21,15 +21,19 @@ namespace mlp {
     }
 
 
-    void Neuron::AddUpperNeuron(Neuron *upper_neuron) {
-        upper_neuron_ = upper_neuron;
-        upper_neuron_ -> lower_neuron_ = this;
-    }
+    // void Neuron::AddUpperNeuron(Neuron *upper_neuron) {
+    //     upper_neuron_ = upper_neuron;
+    //     upper_neuron_ -> lower_neuron_ = this;
+    //     ComemctChildNeorons();
+    //     Вставка сверху нужна 
+    // }
 
 
     void Neuron::AddLowerNeuron(Neuron *lower_neuron) {
         lower_neuron_ = lower_neuron;
         lower_neuron_ -> upper_neuron_ = this;
+            //     ComemctChildNeorons();
+
     }
 
     const float& Neuron::GetError() {
