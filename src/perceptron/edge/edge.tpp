@@ -6,13 +6,17 @@ namespace mlp {
 
 
     template<typename N>
-    Edge<N>::Edge(Neuron *left_neuron) {
+    Edge<N>::Edge(float &k_inertia, float &move_step) : this_weight_(k_inertia, move_step){}
+
+
+    template<typename N>
+    Edge<N>::Edge(float &k_inertia, float &move_step, Neuron *left_neuron) : this_weight_(k_inertia, move_step) {
         left_neuron_ = left_neuron;
     }
 
 
     template<typename N>
-    Edge<N>::Edge(Neuron *left_neuron, Neuron *right_neuron) {
+    Edge<N>::Edge(float &k_inertia, float &move_step, Neuron *left_neuron, Neuron *right_neuron) : this_weight_(k_inertia, move_step) {
         left_neuron_ = left_neuron;
         right_neuron_ = right_neuron;
     }
@@ -21,7 +25,6 @@ namespace mlp {
     // void ResetWeight() {
     //     this_weight_.Reset();
     // }
-
 
 
     template<typename N>

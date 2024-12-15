@@ -2,13 +2,12 @@
 
 #include "weight.h"
 
-
 namespace mlp {
 
 
-    Weight::Weight(float *k_inertia, float *move_step) {
-        coefficient_of_inertia_= k_inertia;
-        step_of_movement_ = move_step;
+    Weight::Weight(float &k_inertia, float &move_step)
+     : coefficient_of_inertia_(k_inertia), step_of_movement_(move_step){
+        InitWeight();
     }
 
 
@@ -19,10 +18,10 @@ namespace mlp {
 
     void Weight::UpdateWeight(float &value, float &error) {
         // Δwij​(n)=αΔwij​(n−1)
-        delta_prev_value_ = *coefficient_of_inertia_ * delta_prev_value_;
+        delta_prev_value_ = coefficient_of_inertia_ * delta_prev_value_;
         // Δwij​(n) += (1−α)ηδj​oi​
-        delta_prev_value_ += (1 - *coefficient_of_inertia_) * \
-        *step_of_movement_ * error * value;
+        delta_prev_value_ += (1 - coefficient_of_inertia_) * \
+        step_of_movement_ * error * value;
         // wij​(n)=wij​(n−1)−Δwij​(n),
         value_ = value_ - delta_prev_value_;
     }

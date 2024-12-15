@@ -16,10 +16,9 @@ namespace mlp {
 
     class Neuron {
         public:
-            Neuron();
-            Neuron(std::size_t id, std::size_t layer_id);
+            Neuron(float &k_inertia, float &step_move, std::size_t &id, std::size_t &layer_id);
 
-            void AddUpperNeuron(Neuron *upper_neuron);
+            // void AddUpperNeuron(Neuron &upper_neuron);
             void AddLowerNeuron(Neuron *lower_neuron);
             const float& GetError();
             const float& GetOutput();
@@ -51,6 +50,8 @@ namespace mlp {
             std::size_t layer_id_;
             float output_{0.0};
             float error_{0.0};
+            float &coefficient_of_inertia_;
+            float &step_of_movement_;
 
             Neuron *upper_neuron_ = nullptr;
             Neuron *lower_neuron_ = nullptr;
@@ -58,9 +59,10 @@ namespace mlp {
             std::vector<std::shared_ptr<Edge<Neuron>>> parent_edges_;
             std::vector<std::shared_ptr<Edge<Neuron>>> child_edges_;
 
+            void AttachNeutronToChildren(Neuron *neuron);
+            void LinkChildNeuronWithOtherChild(Neuron *child_neuron);
             void GetTopInChain(float &value, Neuron* neuron, Neuron* (Neuron::*shift));
             void ComputeChain(Neuron* neuron, void (Neuron::*func)(), Neuron* (Neuron::*shift));
-            void LinkChildNeuronWithOtherChild(Neuron *child_neuron);
             Neuron* GetFirstNeuronInLayer(Neuron* (Edge<Neuron>::*shift)());
     };  // Neuron
 
