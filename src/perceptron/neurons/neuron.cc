@@ -9,13 +9,8 @@
 namespace mlp {
 
 
-    Neuron::Neuron() {
-        id_ = 1;
-        layer_id_ = 1;
-    }
-
-
-    Neuron::Neuron(std::size_t id, std::size_t layer_id) {
+    Neuron::Neuron(float &k_inertia, float &step_move, std::size_t &id, std::size_t &layer_id) 
+        : coefficient_of_inertia_(k_inertia), step_of_movement_(step_move)  {
         id_ = id;
         layer_id_ = layer_id;
     }
@@ -31,10 +26,10 @@ namespace mlp {
 
     void Neuron::AddLowerNeuron(Neuron *lower_neuron) {
         lower_neuron_ = lower_neuron;
-        lower_neuron_ -> upper_neuron_ = this;
-            //     ComemctChildNeorons();
-
+        lower_neuron -> upper_neuron_ = this;
+        AttachNeutronToChildren(lower_neuron_);
     }
+
 
     const float& Neuron::GetError() {
         return error_;
@@ -55,18 +50,19 @@ namespace mlp {
         return layer_id_;
     }
 
-    void Neuron::AddOutput(float value) { // TODO change in output and layer neuron
+
+    void Neuron::AddOutput(float value) {  // TODO change in output and layer neuron
         output_ = value;
     }
 
 
-    void Neuron::AddChildNeuron(Neuron *child_neuron) { // TODO change in output neuron
+    void Neuron::AddChildNeuron(Neuron *child_neuron) {  // TODO change in output neuron
         // пересмотреть логику а то тут песец ^._.^
         Neuron* first_neuron_in_chain = GetFirstNeuronInChain();
         first_neuron_in_chain -> LinkChildNeuronWithOtherChild(child_neuron);
         
         while (first_neuron_in_chain != nullptr) {
-            std::shared_ptr<Edge<Neuron>> edge = std::make_shared<Edge<Neuron>>(first_neuron_in_chain, child_neuron);
+            std::shared_ptr<Edge<Neuron>> edge = std::make_shared<Edge<Neuron>>(coefficient_of_inertia_, step_of_movement_ , first_neuron_in_chain, child_neuron);
             // edge -> AddLeftNeuron(first_neuron_in_chain);
             // edge -> AddRightNeuron(child_neuron);
             first_neuron_in_chain -> child_edges_.push_back(edge);
@@ -76,8 +72,7 @@ namespace mlp {
     }
 
 
-    
-    void Neuron::UpdateWeight() { // TODO change in input
+    void Neuron::UpdateWeight() {  // TODO change in input
         for (std::size_t i = 0; i < parent_edges_.size(); ++i) {
             parent_edges_[i] -> UpdateWeight(output_, error_);
         }
@@ -99,8 +94,7 @@ namespace mlp {
     }
 
 
-
-    void Neuron::ComputeOutput() { // TODO change in input neuron
+    void Neuron::ComputeOutput() {  // TODO change in input neuron
         for (size_t i = 0; i < parent_edges_.size(); ++i) {
             output_ += parent_edges_[i] -> GetWeight() * parent_edges_[i] -> GetLeftNeuron() -> output_;
         }
@@ -157,6 +151,7 @@ namespace mlp {
         return top_value;
     }
 
+
     std::vector<float> Neuron::GetAllCompute() {
         std::vector<float> all_res;
         Neuron *neuron = GetFirstNeuronInLastLayer();
@@ -187,6 +182,24 @@ namespace mlp {
     }
 
 
+    void Neuron::AttachNeutronToChildren(Neuron *neuron) {
+        if (child_edges_.size() != 0) {
+            for (std::size_t i = 0; i < child_edges_.size(); ++i) {
+                Neuron *child_neuron = child_edges_[i] -> GetLeftNeuron();
+                std::shared_ptr<Edge<Neuron>> edge = std::make_shared<Edge<Neuron>>(coefficient_of_inertia_, step_of_movement_, neuron, child_neuron);
+                neuron -> child_edges_.push_back(edge);
+                child_neuron -> parent_edges_.push_back(edge);
+            }
+        }
+    }
+
+
+    void Neuron::LinkChildNeuronWithOtherChild(Neuron *child_neuron) {
+        if (child_edges_.size() != 0) {
+            child_edges_[child_edges_.size()] -> GetRightNeuron() -> AddLowerNeuron(child_neuron);
+        }
+    }
+
     void Neuron::GetTopInChain(float &value, Neuron* neuron, Neuron* (Neuron::*shift)) {
         while (neuron != nullptr) {
             if (neuron -> output_ > value) {
@@ -201,13 +214,6 @@ namespace mlp {
         while (neuron != nullptr) {
             (neuron->*func)();
             neuron = neuron->*shift;
-        }
-    }
-
-
-    void Neuron::LinkChildNeuronWithOtherChild(Neuron *child_neuron) {
-        if (child_edges_.size() != 0) {
-            child_edges_[child_edges_.size()] -> GetRightNeuron() -> AddLowerNeuron(child_neuron);
         }
     }
 

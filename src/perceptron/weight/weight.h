@@ -7,8 +7,8 @@ namespace mlp {
 
     class Weight {
         public:
-            Weight() = default;
-            Weight(float *k_inertia, float *move_step);
+            // Weight() = default;
+            Weight(float &k_inertia, float &move_step);
 
             // void Reset();
             void UpdateWeight(float &value, float &error);
@@ -17,8 +17,8 @@ namespace mlp {
         private:
             float value_;
             float delta_prev_value_{0};
-            float *coefficient_of_inertia_ =  nullptr;
-            float *step_of_movement_ = nullptr;
+            float &coefficient_of_inertia_;
+            float &step_of_movement_;
 
             void InitWeight();
             

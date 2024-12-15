@@ -7,15 +7,14 @@
 
 namespace mlp {
 
-
     template<typename N>
     class Edge {
         public:
             using Neuron = N;
 
-            Edge() = default;
-            Edge(Neuron *left_neuron);
-            Edge(Neuron *left_neuron, Neuron *right_neuron);
+            Edge(float &k_inertia, float &move_step);
+            Edge(float &k_inertia, float &move_step, Neuron *left_neuron);
+            Edge(float &k_inertia, float &move_step, Neuron *left_neuron, Neuron *right_neuron);
 
             // void ResetWeight();
             void AddLeftNeuron(Neuron *left_neuron);
@@ -26,11 +25,9 @@ namespace mlp {
             N* GetRightNeuron();
 
         private:
+            Weight this_weight_;
             Neuron *left_neuron_ = nullptr;
             Neuron *right_neuron_ = nullptr;
-            Weight this_weight_;
-            
-
     };
 
 
