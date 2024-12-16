@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>  // shared_ptr
 
-
+#include "interface_neuron.h"
 #include "../edge/edge.h"
 // защищить по памяти перцептрон
 
@@ -14,37 +14,39 @@
 namespace mlp {
 
 
-    class Neuron {
+    class Neuron : public INeuron {
         public:
-            Neuron(float &k_inertia, float &step_move, std::size_t &id, std::size_t &layer_id);
+            Neuron(float &k_inertia, float &step_move, std::size_t id, std::size_t layer_id);
 
             // void AddUpperNeuron(Neuron &upper_neuron);
             void AddLowerNeuron(Neuron *lower_neuron);
-            const float& GetError();
-            const float& GetOutput();
+            const float& GetError() const override;
+            const float& GetOutput() const override;
             const std::size_t& id();
             const std::size_t& layer_id();
 
-            virtual void AddOutput(float value);
+            virtual void AddOutput(float value) override;
             virtual void AddChildNeuron(Neuron *child_neuron);
-            virtual void UpdateWeight();
+            virtual void UpdateWeight() override;
             virtual void UpdateChainWeight();
             virtual void UpdateAllWeight();
-            virtual void ComputeOutput();
+            virtual void ComputeOutput() override;
             virtual void ComputeChainOutput();
             virtual void ComputeAllOutput(); 
-            virtual void ComputeError();
+            virtual void ComputeError() override;
             virtual void ComputeChainError();
             virtual void ComputeAllError();
-            virtual float GetTopCompute();
+            virtual float GetTopCompute() override;
             virtual std::vector<float> GetAllCompute();
 
             Neuron* GetFirstNeuronInChain();
             Neuron* GetFirstNeuronInLastLayer();
             Neuron* GetFirstNeuronInFirstLayer();
-
-            // TODO UpdateWeight
-
+        
+        protected:
+            const std::vector<std::shared_ptr<Edge>> & GetParantEdges();
+            const std::vector<std::shared_ptr<Edge>> & GetChildEdges();
+    
         private:
             std::size_t id_;
             std::size_t layer_id_;
@@ -56,14 +58,15 @@ namespace mlp {
             Neuron *upper_neuron_ = nullptr;
             Neuron *lower_neuron_ = nullptr;
 
-            std::vector<std::shared_ptr<Edge<Neuron>>> parent_edges_;
-            std::vector<std::shared_ptr<Edge<Neuron>>> child_edges_;
+            std::vector<std::shared_ptr<Edge>> parent_edges_;
+            std::vector<std::shared_ptr<Edge>> child_edges_;
 
+            void AttachNeutronToParents(Neuron *neuron);
             void AttachNeutronToChildren(Neuron *neuron);
             void LinkChildNeuronWithOtherChild(Neuron *child_neuron);
-            void GetTopInChain(float &value, Neuron* neuron, Neuron* (Neuron::*shift));
+            void GetTopInChain(float &value, Neuron* neuron, Neuron* (Neuron::*shift) );
             void ComputeChain(Neuron* neuron, void (Neuron::*func)(), Neuron* (Neuron::*shift));
-            Neuron* GetFirstNeuronInLayer(Neuron* (Edge<Neuron>::*shift)());
+            Neuron* GetFirstNeuronInLayer(Neuron* (Edge::*shift)() const);
     };  // Neuron
 
 
