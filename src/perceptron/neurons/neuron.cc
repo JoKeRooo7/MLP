@@ -190,7 +190,7 @@ namespace mlp {
         // TODO слишком сложная логика для AttachNeuron - через ссылки, поискать другое 
         if (parent_edges_.size() != 0) {
             for (std::size_t i = 0; i < parent_edges_.size(); ++i) {
-                Neuron *parent_neuron = parent_edges_[i] -> GetLeftNeuron();
+                Neuron *parent_neuron = dynamic_cast<Neuron*>(parent_edges_[i] -> GetLeftNeuron());
                 std::shared_ptr<Edge> edge = std::make_shared<Edge>(coefficient_of_inertia_, step_of_movement_, parent_neuron, neuron);
                 neuron -> parent_edges_.push_back(edge);
                 parent_neuron -> child_edges_.push_back(edge);
@@ -202,7 +202,7 @@ namespace mlp {
     void Neuron::AttachNeutronToChildren(Neuron *neuron) {
         if (child_edges_.size() != 0) {
             for (std::size_t i = 0; i < child_edges_.size(); ++i) {
-                Neuron *child_neuron = child_edges_[i] -> GetRightNeuron();
+                Neuron *child_neuron = dynamic_cast<Neuron*>(child_edges_[i] -> GetRightNeuron()) ;
                 std::shared_ptr<Edge> edge = std::make_shared<Edge>(coefficient_of_inertia_, step_of_movement_, neuron, child_neuron);
                 neuron -> child_edges_.push_back(edge);
                 child_neuron -> parent_edges_.push_back(edge);
@@ -213,7 +213,7 @@ namespace mlp {
 
     void Neuron::LinkChildNeuronWithOtherChild(Neuron *child_neuron) {
         if (child_edges_.size() != 0) {
-            child_edges_[child_edges_.size()] -> GetRightNeuron() -> AddLowerNeuron(child_neuron);
+            dynamic_cast<Neuron*>(child_edges_[child_edges_.size()] -> GetRightNeuron()) -> AddLowerNeuron(child_neuron);
         }
     }
 
@@ -236,10 +236,10 @@ namespace mlp {
     }
 
 
-    Neuron* Neuron::GetFirstNeuronInLayer(Neuron* dynamic_cast<Neuron*>((Edge::*shift)() const)) { // not in output
+    Neuron* Neuron::GetFirstNeuronInLayer(INeuron* (Edge::*shift)() const) { // not in output
         Neuron* neuron_in_layer = this;
         while (!neuron_in_layer->child_edges_.empty()) {
-            neuron_in_layer = (neuron_in_layer->child_edges_[0].get() ->*shift)();
+            neuron_in_layer = dynamic_cast<Neuron*>((neuron_in_layer->child_edges_[0].get() ->*shift)());
         }
         return neuron_in_layer->GetFirstNeuronInChain();
     }

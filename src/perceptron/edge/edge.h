@@ -2,8 +2,8 @@
 #define MLP_PERCEPTRON_EDGE_EDGE_H
 
 
-#include "../neurons/interface_neuron.h"
 #include "../weight/weight.h"
+#include "../neurons/interface_neuron.h"
 
 // интерфейс N - 
 

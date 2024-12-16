@@ -66,7 +66,8 @@ namespace mlp {
             void LinkChildNeuronWithOtherChild(Neuron *child_neuron);
             void GetTopInChain(float &value, Neuron* neuron, Neuron* (Neuron::*shift) );
             void ComputeChain(Neuron* neuron, void (Neuron::*func)(), Neuron* (Neuron::*shift));
-            Neuron* GetFirstNeuronInLayer(Neuron* (Edge::*shift)() const);
+            Neuron* GetFirstNeuronInLayer(INeuron* (Edge::*shift)() const);
+    
     };  // Neuron
 
 
