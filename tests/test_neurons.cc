@@ -12,9 +12,12 @@ class FullTestingNeurons : public ::testing::Test {
 };  // UnitTestingOfWeights
 
 
-// class TestingNeuronNetwork : public ::testting::Test {
-    
-// }
+class TestingNeuronNetwork : public mlp::Neuron {
+    public:
+       using mlp::Neuron::Neuron;
+       using mlp::Neuron::GetParentEdges;
+       using mlp::Neuron::GetChildEdges;
+};
 
 TEST_F(FullTestingNeurons, testing_the_creation_1) {
     std::size_t id = 1, layer_id = 1;
@@ -78,4 +81,23 @@ TEST_F(FullTestingNeurons, testing_func_add_child_neuron_1) {
     second_neuron.AddOutput(0.123);
     first_child_neuron.ComputeOutput();
     EXPECT_TRUE(std::fabs(first_child_neuron.GetOutput()) > exp);
+}
+
+
+TEST_F(FullTestingNeurons, testing_func_add_child_neuron_2) {
+    TestingNeuronNetwork first_neuron(coefficient_of_inertia_, step_of_movement_, 1, 1);
+    TestingNeuronNetwork second_neuron(coefficient_of_inertia_, step_of_movement_, 2, 1);
+    TestingNeuronNetwork first_child_neuron(coefficient_of_inertia_, step_of_movement_, 1, 2);
+    first_neuron.AddLowerNeuron(&second_neuron);
+    first_neuron.AddChildNeuron(&first_child_neuron);
+    const std::vector<std::shared_ptr<mlp::Edge>> parents_for_child = first_child_neuron.GetParentEdges();
+    EXPECT_EQ(parents_for_child.size(), 2);
+    EXPECT_EQ(dynamic_cast<TestingNeuronNetwork*>(parents_for_child[0] -> GetLeftNeuron()), &first_neuron);
+    EXPECT_EQ(dynamic_cast<TestingNeuronNetwork*>(parents_for_child[1] -> GetLeftNeuron()), &second_neuron);
+    const std::vector<std::shared_ptr<mlp::Edge>> childs_for_parent_1 = second_neuron.GetChildEdges();
+    EXPECT_EQ(childs_for_parent_1.size(), 1);
+    EXPECT_EQ(dynamic_cast<TestingNeuronNetwork*>(childs_for_parent_1[0] -> GetRightNeuron()), &first_child_neuron);
+    const std::vector<std::shared_ptr<mlp::Edge>> childs_for_parent_2 = first_neuron.GetChildEdges();
+    EXPECT_EQ(childs_for_parent_1.size(), 1);
+    EXPECT_EQ(dynamic_cast<TestingNeuronNetwork*>(childs_for_parent_2[0] -> GetRightNeuron()), &first_child_neuron);
 }

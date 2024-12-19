@@ -44,10 +44,10 @@ namespace mlp {
             Neuron* GetFirstNeuronInFirstLayer();
         
         protected:
-            const std::vector<std::shared_ptr<Edge>> & GetParantEdges();
+            const std::vector<std::shared_ptr<Edge>> & GetParentEdges();
             const std::vector<std::shared_ptr<Edge>> & GetChildEdges();
     
-        private:
+        private: 
             std::size_t id_;
             std::size_t layer_id_;
             float output_{0.0};
@@ -67,7 +67,7 @@ namespace mlp {
             void GetTopInChain(float &value, Neuron* neuron, Neuron* (Neuron::*shift) );
             void ComputeChain(Neuron* neuron, void (Neuron::*func)(), Neuron* (Neuron::*shift));
             Neuron* GetFirstNeuronInLayer(INeuron* (Edge::*shift)() const);
-    
+
     };  // Neuron
 
 

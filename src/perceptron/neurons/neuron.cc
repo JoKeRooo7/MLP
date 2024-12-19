@@ -50,18 +50,7 @@ namespace mlp {
 
 
     void Neuron::AddChildNeuron(Neuron *child_neuron) {  // TODO change in output neuron
-        // пересмотреть логику а то тут песец ^._.^
-        Neuron* first_neuron_in_chain = GetFirstNeuronInChain();
-        first_neuron_in_chain -> LinkChildNeuronWithOtherChild(child_neuron);
-        
-        while (first_neuron_in_chain != nullptr) {
-            std::shared_ptr<Edge> edge = std::make_shared<Edge>(coefficient_of_inertia_, step_of_movement_ , first_neuron_in_chain, child_neuron);
-            // edge -> AddLeftNeuron(first_neuron_in_chain);
-            // edge -> AddRightNeuron(child_neuron);
-            first_neuron_in_chain -> child_edges_.push_back(edge);
-            child_neuron -> parent_edges_.push_back(edge);
-            first_neuron_in_chain = first_neuron_in_chain -> lower_neuron_;
-        }
+        LinkChildNeuronWithOtherChild(child_neuron);
     }
 
 
@@ -175,7 +164,7 @@ namespace mlp {
     }
 
 
-    const std::vector<std::shared_ptr<Edge>>& Neuron::GetParantEdges() {
+    const std::vector<std::shared_ptr<Edge>>& Neuron::GetParentEdges() {
         return parent_edges_;
     }
 
@@ -210,10 +199,17 @@ namespace mlp {
         }
     }
 
-
     void Neuron::LinkChildNeuronWithOtherChild(Neuron *child_neuron) {
+        Neuron* first_neuron_in_chain = GetFirstNeuronInChain();
         if (child_edges_.size() != 0) {
-            dynamic_cast<Neuron*>(child_edges_[child_edges_.size()] -> GetRightNeuron()) -> AddLowerNeuron(child_neuron);
+            dynamic_cast<Neuron*>(first_neuron_in_chain -> child_edges_[first_neuron_in_chain -> child_edges_.size()] -> GetRightNeuron()) -> AddLowerNeuron(child_neuron);
+        } else {                    
+            while (first_neuron_in_chain != nullptr) {
+                std::shared_ptr<Edge> edge = std::make_shared<Edge>(coefficient_of_inertia_, step_of_movement_ , first_neuron_in_chain, child_neuron);
+                first_neuron_in_chain -> child_edges_.push_back(edge);
+                child_neuron -> parent_edges_.push_back(edge);
+                first_neuron_in_chain = first_neuron_in_chain -> lower_neuron_;
+            }
         }
     }
 
