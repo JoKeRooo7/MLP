@@ -11,11 +11,6 @@ namespace mlp {
     }
 
 
-    // void Weight::Reset() {
-    //     InitWeitght();
-    // }
-
-
     void Weight::UpdateWeight(float &value, float &error) {
         // Δwij​(n)=αΔwij​(n−1)
         delta_prev_value_ = coefficient_of_inertia_ * delta_prev_value_;
@@ -27,7 +22,7 @@ namespace mlp {
     }
 
 
-    const float& Weight::GetWeight() {
+    const float& Weight::GetWeight() const {
         return value_;
     }
 
