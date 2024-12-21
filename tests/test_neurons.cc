@@ -258,7 +258,7 @@ TEST_F(FullNeuralNetworkTesting, testing_update_chain_and_all) {
 }
 
 
-// TODO tests for 
+// TODO tests for
 // virtual void ComputeOutput() override;
 // virtual void ComputeChainOutput();
 // virtual void ComputeAllOutput(); 
@@ -267,7 +267,6 @@ TEST_F(FullNeuralNetworkTesting, testing_update_chain_and_all) {
 // virtual void ComputeAllError();
 // virtual float GetTopCompute() override;
 // virtual std::vector<float> GetAllCompute();
-
 // Neuron* GetFirstNeuronInChain();
 // Neuron* GetFirstNeuronInLastLayer();
 // Neuron* GetFirstNeuronInFirstLayer();
