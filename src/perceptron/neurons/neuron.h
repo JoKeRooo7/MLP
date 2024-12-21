@@ -22,8 +22,8 @@ namespace mlp {
             void AddLowerNeuron(Neuron *lower_neuron);
             const float& GetError() const override;
             const float& GetOutput() const override;
-            const std::size_t& id();
-            const std::size_t& layer_id();
+            const std::size_t& id() const;
+            const std::size_t& layer_id() const;
 
             virtual void AddOutput(float value) override;
             virtual void AddChildNeuron(Neuron *child_neuron);
@@ -44,8 +44,8 @@ namespace mlp {
             Neuron* GetFirstNeuronInFirstLayer();
         
         protected:
-            const std::vector<std::shared_ptr<Edge>> & GetParentEdges();
-            const std::vector<std::shared_ptr<Edge>> & GetChildEdges();
+            const std::vector<std::shared_ptr<Edge>>& GetParentEdges();
+            const std::vector<std::shared_ptr<Edge>>& GetChildEdges();
     
         private: 
             std::size_t id_;

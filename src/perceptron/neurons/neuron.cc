@@ -38,12 +38,12 @@ namespace mlp {
     }
 
 
-    const std::size_t& Neuron::id() {
+    const std::size_t& Neuron::id() const {
         return id_;
     }
 
 
-    const std::size_t& Neuron::layer_id() {
+    const std::size_t& Neuron::layer_id() const {
         return layer_id_;
     }
 
