@@ -10,7 +10,7 @@ class UnitTestingOfEdge : public ::testing::Test {
         float coefficient_of_inertia_= 0.1;
         float step_of_movement_= 0.1;
 
-};  // UnitTestingOfWeights
+};
 
 
 TEST_F(UnitTestingOfEdge, testing_the_creation_1) {

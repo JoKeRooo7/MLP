@@ -16,13 +16,12 @@ namespace mlp {
             Edge(float &k_inertia, float &move_step, Neuron *left_neuron);
             Edge(float &k_inertia, float &move_step, Neuron *left_neuron, Neuron *right_neuron);
 
-            // void ResetWeight();
             void AddLeftNeuron(Neuron *left_neuron);
             void AddRightNeuron(Neuron *right_neuron);
             void UpdateWeight(float &output_, float &error_);
-            const float& GetWeight();
-            N* GetLeftNeuron();
-            N* GetRightNeuron();
+            const float& GetWeight() const;
+            N* GetLeftNeuron() const;
+            N* GetRightNeuron() const;
 
         private:
             Weight this_weight_;

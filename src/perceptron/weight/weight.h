@@ -7,12 +7,9 @@ namespace mlp {
 
     class Weight {
         public:
-            // Weight() = default;
             Weight(float &k_inertia, float &move_step);
-
-            // void Reset();
             void UpdateWeight(float &value, float &error);
-            const float& GetWeight();
+            const float& GetWeight() const;
 
         private:
             float value_;
@@ -26,5 +23,6 @@ namespace mlp {
 
 
 }  // mlp
+
 
 #endif  //  MLP_PERCEPTRON_WEIIGHT_WEIGHT_H_

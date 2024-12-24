@@ -21,23 +21,16 @@ namespace mlp {
         right_neuron_ = right_neuron;
     }
 
-    // template<typename N>
-    // void ResetWeight() {
-    //     this_weight_.Reset();
-    // }
-
 
     template<typename N>
     void Edge<N>::AddLeftNeuron(Neuron *left_neuron) {
         left_neuron_ = left_neuron;
-        // ResetWeight();
     }
 
 
     template<typename N>
     void Edge<N>::AddRightNeuron(Neuron *right_neuron) {
         right_neuron_ = right_neuron;
-        // ResetWeight();
     }
 
 
@@ -48,19 +41,19 @@ namespace mlp {
 
 
     template<typename N>
-    const float& Edge<N>::GetWeight() {
+    const float& Edge<N>::GetWeight() const {
         return this_weight_.GetWeight();
     }
 
 
     template<typename N>
-    N* Edge<N>::GetLeftNeuron() {
+    N* Edge<N>::GetLeftNeuron() const {
         return left_neuron_;
     }
 
 
     template<typename N>
-    N* Edge<N>::GetRightNeuron() {
+    N* Edge<N>::GetRightNeuron() const {
         return right_neuron_;
     }
 

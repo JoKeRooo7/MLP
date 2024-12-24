@@ -16,13 +16,13 @@ namespace mlp {
 
     class Neuron {
         public:
-            Neuron(float &k_inertia, float &step_move, std::size_t &id, std::size_t &layer_id);
+            Neuron(float &k_inertia, float &step_move, std::size_t id, std::size_t layer_id);
 
             // void AddUpperNeuron(Neuron &upper_neuron);
-            void AddLowerNeuron(Neuron *lower_neuron);
+            void AddLowerInChainNeuron(Neuron *lower_neuron);
             const float& GetError();
             const float& GetOutput();
-            const std::size_t& id();
+            const std::size_t& id();  // google style assessor
             const std::size_t& layer_id();
 
             virtual void AddOutput(float value);
@@ -40,11 +40,14 @@ namespace mlp {
             virtual std::vector<float> GetAllCompute();
 
             Neuron* GetFirstNeuronInChain();
+            Neuron* GetLastNeuronInChain();
             Neuron* GetFirstNeuronInLastLayer();
             Neuron* GetFirstNeuronInFirstLayer();
-
-            // TODO UpdateWeight
-
+        
+        protected:
+            const std::vector<std::shared_ptr<Edge<Neuron>>>& GetParantEdges();
+            const std::vector<std::shared_ptr<Edge<Neuron>>>& GetChildEdges();
+    
         private:
             std::size_t id_;
             std::size_t layer_id_;
@@ -59,11 +62,13 @@ namespace mlp {
             std::vector<std::shared_ptr<Edge<Neuron>>> parent_edges_;
             std::vector<std::shared_ptr<Edge<Neuron>>> child_edges_;
 
+            void AttachNeutronToParents(Neuron *neuron);
             void AttachNeutronToChildren(Neuron *neuron);
             void LinkChildNeuronWithOtherChild(Neuron *child_neuron);
             void GetTopInChain(float &value, Neuron* neuron, Neuron* (Neuron::*shift));
             void ComputeChain(Neuron* neuron, void (Neuron::*func)(), Neuron* (Neuron::*shift));
-            Neuron* GetFirstNeuronInLayer(Neuron* (Edge<Neuron>::*shift)());
+            Neuron* GetFirstNeuronInLayer(Neuron* (Edge<Neuron>::*shift)() const);
+            Neuron* GetBoundaryNeuronInChain(Neuron* Neuron::*direction);
     };  // Neuron
 
 
