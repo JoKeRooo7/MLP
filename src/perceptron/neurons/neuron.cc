@@ -26,8 +26,8 @@ namespace mlp {
         neuron -> lower_neuron_ = lower_neuron;
         lower_neuron -> upper_neuron_ = neuron;
         while(lower_neuron != nullptr) {
-            AttachNeutronToParents(lower_neuron);
-            AttachNeutronToChildren(lower_neuron_);
+            neuron -> AttachNeutronToParents(lower_neuron);
+            neuron -> AttachNeutronToChildren(lower_neuron);
             lower_neuron = lower_neuron -> lower_neuron_;
         }
     }

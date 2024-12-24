@@ -171,6 +171,7 @@ TEST_F(FullTestingNeurons, testing_func_add_child_neuron_4) {
     TestingNeuronNetwork second_child_neuron(coefficient_of_inertia_, step_of_movement_, 1, 2);
     first_neuron.AddLowerInChainNeuron(&second_neuron);
     first_child_neuron.AddLowerInChainNeuron(&second_child_neuron);
+    std::cout << "Add child !\n";
     first_neuron.AddChildNeuron(&second_child_neuron);
     const std::vector<std::shared_ptr<mlp::Edge>> parents_for_child_1 = first_child_neuron.GetParentEdges();
     EXPECT_EQ(parents_for_child_1.size(), 2);
