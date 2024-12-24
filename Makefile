@@ -6,6 +6,7 @@ C = $(COMPILER) $(COMPILER_FLAGS)
 TEST_EDGE = tests/test_edge.cc
 TEST_WEIGHT = tests/test_weight.cc
 TEST_NEURON = tests/test_neurons.cc
+
 EDGE = src/perceptron/edge/edge.cc
 WEIGHT = src/perceptron/weight/weight.cc
 NEURON = src/perceptron/neurons/neuron.cc

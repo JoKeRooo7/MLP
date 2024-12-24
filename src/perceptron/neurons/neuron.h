@@ -19,12 +19,11 @@ namespace mlp {
             Neuron(float &k_inertia, float &step_move, std::size_t id, std::size_t layer_id);
 
             // void AddUpperNeuron(Neuron &upper_neuron);
-            void AddLowerNeuron(Neuron *lower_neuron);
+            void AddLowerInChainNeuron(Neuron *lower_neuron);
             const float& GetError() const override;
             const float& GetOutput() const override;
-            const std::size_t& id();
-            const std::size_t& layer_id();
-
+            const std::size_t& id() const; 
+            const std::size_t& layer_id() const;
             virtual void AddOutput(float value) override;
             virtual void AddChildNeuron(Neuron *child_neuron);
             virtual void UpdateWeight() override;
@@ -40,12 +39,13 @@ namespace mlp {
             virtual std::vector<float> GetAllCompute();
 
             Neuron* GetFirstNeuronInChain();
+            Neuron* GetLastNeuronInChain();
             Neuron* GetFirstNeuronInLastLayer();
             Neuron* GetFirstNeuronInFirstLayer();
         
         protected:
-            const std::vector<std::shared_ptr<Edge>> & GetParentEdges();
-            const std::vector<std::shared_ptr<Edge>> & GetChildEdges();
+            const std::vector<std::shared_ptr<Edge>>& GetParentEdges();
+            const std::vector<std::shared_ptr<Edge>>& GetChildEdges();
     
         private: 
             std::size_t id_;
@@ -66,8 +66,8 @@ namespace mlp {
             void LinkChildNeuronWithOtherChild(Neuron *child_neuron);
             void GetTopInChain(float &value, Neuron* neuron, Neuron* (Neuron::*shift) );
             void ComputeChain(Neuron* neuron, void (Neuron::*func)(), Neuron* (Neuron::*shift));
+            Neuron* GetBoundaryNeuronInChain(Neuron* Neuron::*direction);
             Neuron* GetFirstNeuronInLayer(INeuron* (Edge::*shift)() const);
-
     };  // Neuron
 
 

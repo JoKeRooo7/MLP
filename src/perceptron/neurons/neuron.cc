@@ -1,9 +1,14 @@
 #include <cstddef>  // size_t
 #include <vector>
 #include <memory>  // shared_ptr
+#include <stdexcept>
 #include "neuron.h"
 #include "../functions/activation_function.h"
 #include "../edge/edge.h"
+
+
+
+#include <iostream>
 
 
 namespace mlp {
@@ -16,11 +21,15 @@ namespace mlp {
     }
 
 
-    void Neuron::AddLowerNeuron(Neuron *lower_neuron) {
-        lower_neuron_ = lower_neuron;
-        lower_neuron -> upper_neuron_ = this;
-        AttachNeutronToParents(lower_neuron);
-        AttachNeutronToChildren(lower_neuron_);
+    void Neuron::AddLowerInChainNeuron(Neuron *lower_neuron) {
+        Neuron *neuron = GetLastNeuronInChain();
+        neuron -> lower_neuron_ = lower_neuron;
+        lower_neuron -> upper_neuron_ = neuron;
+        while(lower_neuron != nullptr) {
+            neuron -> AttachNeutronToParents(lower_neuron);
+            neuron -> AttachNeutronToChildren(lower_neuron);
+            lower_neuron = lower_neuron -> lower_neuron_;
+        }
     }
 
 
@@ -34,12 +43,12 @@ namespace mlp {
     }
 
 
-    const std::size_t& Neuron::id() {
+    const std::size_t& Neuron::id() const {
         return id_;
     }
 
 
-    const std::size_t& Neuron::layer_id() {
+    const std::size_t& Neuron::layer_id() const {
         return layer_id_;
     }
 
@@ -50,7 +59,11 @@ namespace mlp {
 
 
     void Neuron::AddChildNeuron(Neuron *child_neuron) {  // TODO change in output neuron
-        LinkChildNeuronWithOtherChild(child_neuron);
+        Neuron* first_child_neuron = child_neuron -> GetFirstNeuronInChain();
+        while (first_child_neuron != nullptr) {
+            LinkChildNeuronWithOtherChild(first_child_neuron);
+            first_child_neuron = first_child_neuron -> lower_neuron_;
+        }
     }
 
 
@@ -146,11 +159,12 @@ namespace mlp {
 
 
     Neuron* Neuron::GetFirstNeuronInChain() {
-        Neuron *first_neuron_in_chain = this;
-        while (first_neuron_in_chain -> upper_neuron_) {
-            first_neuron_in_chain = first_neuron_in_chain -> upper_neuron_;
-        };
-        return first_neuron_in_chain;
+        return GetBoundaryNeuronInChain(&Neuron::upper_neuron_);
+    }
+
+
+    Neuron* Neuron::GetLastNeuronInChain() {
+        return GetBoundaryNeuronInChain(&Neuron::lower_neuron_);
     }
 
 
@@ -202,8 +216,8 @@ namespace mlp {
     void Neuron::LinkChildNeuronWithOtherChild(Neuron *child_neuron) {
         Neuron* first_neuron_in_chain = GetFirstNeuronInChain();
         if (child_edges_.size() != 0) {
-            dynamic_cast<Neuron*>(first_neuron_in_chain -> child_edges_[first_neuron_in_chain -> child_edges_.size()] -> GetRightNeuron()) -> AddLowerNeuron(child_neuron);
-        } else {                    
+            dynamic_cast<Neuron*>(first_neuron_in_chain -> child_edges_[first_neuron_in_chain -> child_edges_.size() - 1] -> GetRightNeuron()) -> AddLowerInChainNeuron(child_neuron);
+        } else {                   
             while (first_neuron_in_chain != nullptr) {
                 std::shared_ptr<Edge> edge = std::make_shared<Edge>(coefficient_of_inertia_, step_of_movement_ , first_neuron_in_chain, child_neuron);
                 first_neuron_in_chain -> child_edges_.push_back(edge);
@@ -238,6 +252,15 @@ namespace mlp {
             neuron_in_layer = dynamic_cast<Neuron*>((neuron_in_layer->child_edges_[0].get() ->*shift)());
         }
         return neuron_in_layer->GetFirstNeuronInChain();
+    }
+
+
+    Neuron* Neuron::GetBoundaryNeuronInChain(Neuron* Neuron::*direction) {
+        Neuron *current_neuron = this;
+        while (current_neuron->*direction) {
+            current_neuron = current_neuron->*direction;
+        }
+        return current_neuron;
     }
 
 
