@@ -3,7 +3,6 @@
 #include <memory>  // shared_ptr
 #include <stdexcept>
 #include "neuron.h"
-#include "../functions/activation_function.h"
 #include "../edge/edge.h"
 
 
@@ -14,8 +13,8 @@
 namespace mlp {
 
 
-    Neuron::Neuron(float &k_inertia, float &step_move, std::size_t id, std::size_t layer_id) 
-        : coefficient_of_inertia_(k_inertia), step_of_movement_(step_move)  {
+    Neuron::Neuron(float (*activation_function)(float&), float &k_inertia, float &step_move, std::size_t id, std::size_t layer_id) 
+        : coefficient_of_inertia_(k_inertia), step_of_movement_(step_move), activation_function_(activation_function)   {
         id_ = id;
         layer_id_ = layer_id;
     }
@@ -26,6 +25,12 @@ namespace mlp {
         neuron -> lower_neuron_ = lower_neuron;
         lower_neuron -> upper_neuron_ = neuron;
         while(lower_neuron != nullptr) {
+            if (!lower_neuron -> parent_edges_.empty()) {
+                throw std::runtime_error("the parents in the lower neuron are not empty!\n");
+            }
+            if (!lower_neuron -> child_edges_.empty()) {
+                throw std::runtime_error("the childs in the lower neuron are not empty!\n");
+            }
             neuron -> AttachNeutronToParents(lower_neuron);
             neuron -> AttachNeutronToChildren(lower_neuron);
             lower_neuron = lower_neuron -> lower_neuron_;
@@ -88,8 +93,8 @@ namespace mlp {
     void Neuron::ComputeOutput() {  // TODO change in input neuron
         for (size_t i = 0; i < parent_edges_.size(); ++i) {
             output_ += parent_edges_[i] -> GetWeight() * dynamic_cast<Neuron*>(parent_edges_[i] -> GetLeftNeuron()) -> output_;
-        }
-        output_ = sigmoid_function(output_);
+        } 
+        output_ = activation_function_(output_);
     }
 
 
@@ -102,7 +107,7 @@ namespace mlp {
     void Neuron::ComputeAllOutput() { // TODO Change in input neuron
         Neuron *current_neuron = GetFirstNeuronInFirstLayer();
         current_neuron -> ComputeChainOutput();
-        while (child_edges_.size() > 0) {
+        while (!current_neuron -> child_edges_.empty()) {
             current_neuron = dynamic_cast<Neuron*>(current_neuron -> child_edges_[0] -> GetRightNeuron());
             current_neuron -> ComputeChainOutput();
         }
@@ -127,7 +132,7 @@ namespace mlp {
 
     void Neuron::ComputeAllError() { // TODO change in input  neuron
         Neuron* neuron =  GetFirstNeuronInLastLayer();
-        while (neuron -> parent_edges_.size() != 0) {
+        while (!neuron -> parent_edges_.empty()) {
             neuron -> ComputeChainError();
             neuron = dynamic_cast<Neuron*>(neuron -> parent_edges_[0] -> GetLeftNeuron());
         }
@@ -165,12 +170,12 @@ namespace mlp {
 
 
     Neuron* Neuron::GetFirstNeuronInLastLayer() {
-        return GetFirstNeuronInLayer(&Edge::GetRightNeuron);
+        return GetFirstNeuronInLayer(&Neuron::child_edges_, &Edge::GetRightNeuron);
     }
 
 
     Neuron* Neuron::GetFirstNeuronInFirstLayer() {
-        return GetFirstNeuronInLayer(&Edge::GetLeftNeuron);
+        return GetFirstNeuronInLayer(&Neuron::parent_edges_, &Edge::GetLeftNeuron);
     }
 
 
@@ -210,21 +215,25 @@ namespace mlp {
     }
 
     void Neuron::LinkChildNeuronWithOtherChild(Neuron *child_neuron) { 
-        Neuron* first_in_child_neuron = child_neuron -> GetFirstNeuronInChain();
         Neuron* first_neuron_in_chain = GetFirstNeuronInChain();
+        CheckEmptyEdgesInChild(child_neuron -> GetFirstNeuronInChain());
         if (first_neuron_in_chain -> child_edges_.size() != 0) {
             dynamic_cast<Neuron*>(first_neuron_in_chain -> child_edges_[first_neuron_in_chain -> child_edges_.size() - 1] -> GetRightNeuron()) -> AddLowerInChainNeuron(child_neuron);
         } else { 
-            while (first_neuron_in_chain != nullptr) {
-                while (first_in_child_neuron != nullptr) {
-                    std::shared_ptr<Edge> edge = std::make_shared<Edge>(coefficient_of_inertia_, step_of_movement_, first_neuron_in_chain, first_in_child_neuron);
-                    first_neuron_in_chain -> child_edges_.push_back(edge);
-                    first_in_child_neuron -> parent_edges_.push_back(edge);
-                    first_in_child_neuron = first_in_child_neuron -> lower_neuron_;
-                }
-                first_in_child_neuron = child_neuron -> GetFirstNeuronInChain();
-                first_neuron_in_chain = first_neuron_in_chain -> lower_neuron_;
+            CreateAndAddEdges(first_neuron_in_chain, child_neuron);
+        }
+    }
+
+
+    void Neuron::CheckEmptyEdgesInChild(Neuron* first_in_child_neuron) {
+        while (first_in_child_neuron != nullptr) {
+            if (!first_in_child_neuron->parent_edges_.empty()) {
+                throw std::runtime_error("The parents in the child neuron are not empty!\n");
             }
+            if (!first_in_child_neuron->child_edges_.empty()) {
+                throw std::runtime_error("The childs in the child neuron are not empty!\n");
+            }
+            first_in_child_neuron = first_in_child_neuron->lower_neuron_;
         }
     }
 
@@ -238,7 +247,21 @@ namespace mlp {
         }
     }
 
+
+    void Neuron::CreateAndAddEdges(Neuron* first_neuron_in_chain, Neuron* child_neuron) {
+        while (first_neuron_in_chain != nullptr) {
+            Neuron* first_in_child_neuron = child_neuron->GetFirstNeuronInChain();
+            while (first_in_child_neuron != nullptr) {
+                std::shared_ptr<Edge> edge = std::make_shared<Edge>(coefficient_of_inertia_, step_of_movement_, first_neuron_in_chain, first_in_child_neuron);
+                first_neuron_in_chain->child_edges_.push_back(edge);
+                first_in_child_neuron->parent_edges_.push_back(edge);
+                first_in_child_neuron = first_in_child_neuron->lower_neuron_;
+            }
+            first_neuron_in_chain = first_neuron_in_chain->lower_neuron_;
+        }
+    }
     
+
     void Neuron::ComputeChain(Neuron* neuron, void (Neuron::*func)(), Neuron* (Neuron::*shift)) {
         while (neuron != nullptr) {
             (neuron->*func)();
@@ -246,14 +269,6 @@ namespace mlp {
         }
     }
 
-
-    Neuron* Neuron::GetFirstNeuronInLayer(INeuron* (Edge::*shift)() const) { // not in output
-        Neuron* neuron_in_layer = this;
-        while (!neuron_in_layer->child_edges_.empty()) {
-            neuron_in_layer = dynamic_cast<Neuron*>((neuron_in_layer->child_edges_[0].get() ->*shift)());
-        }
-        return neuron_in_layer->GetFirstNeuronInChain();
-    }
 
 
     Neuron* Neuron::GetBoundaryNeuronInChain(Neuron* Neuron::*direction) {
@@ -264,5 +279,18 @@ namespace mlp {
         return current_neuron;
     }
 
+
+    Neuron* Neuron::GetFirstNeuronInLayer(
+        std::vector<std::shared_ptr<Edge>> Neuron::*edges_selector,
+        INeuron* (Edge::*shift)() const) {
+        
+        Neuron* neuron_in_layer = this;
+        std::vector<std::shared_ptr<Edge>> edges = neuron_in_layer->*edges_selector;
+        while (!edges.empty()) {
+            neuron_in_layer = dynamic_cast<Neuron*>((edges[0].get()->*shift)());
+            edges = neuron_in_layer->*edges_selector;
+        }
+        return neuron_in_layer; // возвращаем найденный нейрон
+    }
 
 }  // mlp

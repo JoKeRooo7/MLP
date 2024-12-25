@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 #include "../src/perceptron/edge/edge.h"
 #include "../src/perceptron/neurons/neuron.h"
+#include "../src/perceptron/functions/activation_function.h"
 
 #include <iostream>
 
@@ -32,13 +33,13 @@ class FullNeuralNetworkTesting : public FullTestingNeurons {
         TestingNeuronNetwork first_child_neuron, second_child_neuron, third_child_neuron;
         TestingNeuronNetwork first_last_neuron, second_last_neuron;
         FullNeuralNetworkTesting()
-            : first_neuron(coefficient_of_inertia_, step_of_movement_, 1, 1),
-            second_neuron(coefficient_of_inertia_, step_of_movement_, 2, 1),
-            first_child_neuron(coefficient_of_inertia_, step_of_movement_, 1, 2),
-            second_child_neuron(coefficient_of_inertia_, step_of_movement_, 2, 2),
-            third_child_neuron(coefficient_of_inertia_, step_of_movement_, 3, 2),
-            first_last_neuron(coefficient_of_inertia_, step_of_movement_, 1, 3),
-            second_last_neuron(coefficient_of_inertia_, step_of_movement_, 2, 3) {
+            : first_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 1),
+            second_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 1),
+            first_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 2),
+            second_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 2),
+            third_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 3, 2),
+            first_last_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 3),
+            second_last_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 3) {
                 first_neuron.AddLowerInChainNeuron(&second_neuron);
                 first_neuron.AddChildNeuron(&first_child_neuron);
                 first_neuron.AddChildNeuron(&second_child_neuron);
@@ -56,14 +57,14 @@ class FullNeuralNetworkTesting : public FullTestingNeurons {
 TEST_F(FullTestingNeurons, testing_the_creation_1) {
     std::size_t id = 1, layer_id = 1;
     EXPECT_NO_THROW({
-        mlp::Neuron(coefficient_of_inertia_, step_of_movement_, id, layer_id);
+        mlp::Neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, id, layer_id);
     });
 }
 
 
 TEST_F(FullTestingNeurons, testing_func_get_variables) {
     std::size_t id = 1, layer_id = 1;
-    mlp::Neuron neuron(coefficient_of_inertia_, step_of_movement_, id, layer_id);
+    mlp::Neuron neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, id, layer_id);
     EXPECT_NEAR(neuron.GetError(), 0.0, exp);
     EXPECT_NEAR(neuron.GetOutput(), 0.0, exp);
     EXPECT_EQ(neuron.id(), id);
@@ -74,26 +75,26 @@ TEST_F(FullTestingNeurons, testing_func_get_variables) {
 TEST_F(FullTestingNeurons, testing_func_add_output) {
     std::size_t id = 1, layer_id = 1;
     float var = 0.12345;
-    mlp::Neuron neuron(coefficient_of_inertia_, step_of_movement_, id, layer_id);
+    mlp::Neuron neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, id, layer_id);
     EXPECT_NO_THROW(neuron.AddOutput(var));
     EXPECT_NEAR(neuron.GetOutput(), var, exp);
 }
 
 
 TEST_F(FullTestingNeurons, testing_func_add_lower_neuron_1) {
-    mlp::Neuron first_neuron(coefficient_of_inertia_, step_of_movement_, 1, 1);
-    mlp::Neuron second_neuron(coefficient_of_inertia_, step_of_movement_, 2, 1);
+    mlp::Neuron first_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 1);
+    mlp::Neuron second_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 1);
     first_neuron.AddLowerInChainNeuron(&second_neuron);
     EXPECT_EQ(second_neuron.GetFirstNeuronInChain(), &first_neuron);
 }
 
 
 TEST_F(FullTestingNeurons, testing_func_add_lower_neuron_2) {
-    mlp::Neuron first_neuron(coefficient_of_inertia_, step_of_movement_, 1, 1);
-    mlp::Neuron second_neuron(coefficient_of_inertia_, step_of_movement_, 2, 1);
-    mlp::Neuron third_neuron(coefficient_of_inertia_, step_of_movement_, 3, 1);
-    mlp::Neuron fourth_neuron(coefficient_of_inertia_, step_of_movement_, 4, 1);
-    mlp::Neuron fifth_neuron(coefficient_of_inertia_, step_of_movement_, 5, 1);
+    mlp::Neuron first_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 1);
+    mlp::Neuron second_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 1);
+    mlp::Neuron third_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 3, 1);
+    mlp::Neuron fourth_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 4, 1);
+    mlp::Neuron fifth_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 5, 1);
     first_neuron.AddLowerInChainNeuron(&second_neuron);
     second_neuron.AddLowerInChainNeuron(&third_neuron);
     third_neuron.AddLowerInChainNeuron(&fourth_neuron);
@@ -106,9 +107,9 @@ TEST_F(FullTestingNeurons, testing_func_add_lower_neuron_2) {
 
 
 TEST_F(FullTestingNeurons, testing_func_add_child_neuron_1) {
-    mlp::Neuron first_neuron(coefficient_of_inertia_, step_of_movement_, 1, 1);
-    mlp::Neuron second_neuron(coefficient_of_inertia_, step_of_movement_, 2, 1);
-    mlp::Neuron first_child_neuron(coefficient_of_inertia_, step_of_movement_, 1, 2);
+    mlp::Neuron first_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 1);
+    mlp::Neuron second_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 1);
+    mlp::Neuron first_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 2);
     first_neuron.AddLowerInChainNeuron(&second_neuron);
     second_neuron.AddChildNeuron(&first_child_neuron);
     first_neuron.AddOutput(0.123);
@@ -119,9 +120,9 @@ TEST_F(FullTestingNeurons, testing_func_add_child_neuron_1) {
 
 
 TEST_F(FullTestingNeurons, testing_func_add_child_neuron_2) {
-    TestingNeuronNetwork first_neuron(coefficient_of_inertia_, step_of_movement_, 1, 1);
-    TestingNeuronNetwork second_neuron(coefficient_of_inertia_, step_of_movement_, 2, 1);
-    TestingNeuronNetwork first_child_neuron(coefficient_of_inertia_, step_of_movement_, 1, 2);
+    TestingNeuronNetwork first_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 1);
+    TestingNeuronNetwork second_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 1);
+    TestingNeuronNetwork first_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 2);
     first_neuron.AddLowerInChainNeuron(&second_neuron);
     first_neuron.AddChildNeuron(&first_child_neuron);
     const std::vector<std::shared_ptr<mlp::Edge>> parents_for_child = first_child_neuron.GetParentEdges();
@@ -138,10 +139,10 @@ TEST_F(FullTestingNeurons, testing_func_add_child_neuron_2) {
 
 
 TEST_F(FullTestingNeurons, testing_func_add_child_neuron_3) {
-    TestingNeuronNetwork first_neuron(coefficient_of_inertia_, step_of_movement_, 1, 1);
-    TestingNeuronNetwork second_neuron(coefficient_of_inertia_, step_of_movement_, 2, 1);
-    TestingNeuronNetwork first_child_neuron(coefficient_of_inertia_, step_of_movement_, 1, 2);
-    TestingNeuronNetwork second_child_neuron(coefficient_of_inertia_, step_of_movement_, 1, 2);
+    TestingNeuronNetwork first_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 1);
+    TestingNeuronNetwork second_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 1);
+    TestingNeuronNetwork first_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 2);
+    TestingNeuronNetwork second_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 2);
     first_neuron.AddLowerInChainNeuron(&second_neuron);
     first_neuron.AddChildNeuron(&first_child_neuron);
     first_neuron.AddChildNeuron(&second_child_neuron);
@@ -165,10 +166,10 @@ TEST_F(FullTestingNeurons, testing_func_add_child_neuron_3) {
 
 
 TEST_F(FullTestingNeurons, testing_func_add_child_neuron_4) {
-    TestingNeuronNetwork first_neuron(coefficient_of_inertia_, step_of_movement_, 1, 1);
-    TestingNeuronNetwork second_neuron(coefficient_of_inertia_, step_of_movement_, 2, 1);
-    TestingNeuronNetwork first_child_neuron(coefficient_of_inertia_, step_of_movement_, 1, 2);
-    TestingNeuronNetwork second_child_neuron(coefficient_of_inertia_, step_of_movement_, 1, 2);
+    TestingNeuronNetwork first_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 1);
+    TestingNeuronNetwork second_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 1);
+    TestingNeuronNetwork first_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 2);
+    TestingNeuronNetwork second_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 2);
     first_neuron.AddLowerInChainNeuron(&second_neuron);
     first_child_neuron.AddLowerInChainNeuron(&second_child_neuron);
     first_neuron.AddChildNeuron(&second_child_neuron);
@@ -191,10 +192,101 @@ TEST_F(FullTestingNeurons, testing_func_add_child_neuron_4) {
 }
 
 
+
+void CheckParentConnections(TestingNeuronNetwork& child_neuron, 
+                             TestingNeuronNetwork& first_neuron, 
+                             TestingNeuronNetwork& second_neuron, 
+                             TestingNeuronNetwork& third_neuron) {
+    const std::vector<std::shared_ptr<mlp::Edge>> parents = child_neuron.GetParentEdges();
+    EXPECT_EQ(dynamic_cast<TestingNeuronNetwork*>(parents[0]->GetLeftNeuron()), &first_neuron);
+    EXPECT_EQ(dynamic_cast<TestingNeuronNetwork*>(parents[1]->GetLeftNeuron()), &second_neuron);
+    EXPECT_EQ(dynamic_cast<TestingNeuronNetwork*>(parents[2]->GetLeftNeuron()), &third_neuron);
+}
+
+
+void CheckChildConnections(TestingNeuronNetwork& parent_neuron, 
+                            TestingNeuronNetwork& first_child_neuron, 
+                            TestingNeuronNetwork& second_child_neuron, 
+                            TestingNeuronNetwork& third_child_neuron) {
+    const std::vector<std::shared_ptr<mlp::Edge>> childs = parent_neuron.GetChildEdges();
+    EXPECT_EQ(dynamic_cast<TestingNeuronNetwork*>(childs[0]->GetRightNeuron()), &first_child_neuron);
+    EXPECT_EQ(dynamic_cast<TestingNeuronNetwork*>(childs[1]->GetRightNeuron()), &second_child_neuron);
+    EXPECT_EQ(dynamic_cast<TestingNeuronNetwork*>(childs[2]->GetRightNeuron()), &third_child_neuron);
+}
+
+
+TEST_F(FullTestingNeurons, testing_conenctions_1) {
+    TestingNeuronNetwork first_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 1);
+    TestingNeuronNetwork second_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 1);
+    TestingNeuronNetwork third_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 3, 1);
+    TestingNeuronNetwork first_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 2);
+    TestingNeuronNetwork second_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 2);
+    TestingNeuronNetwork third_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 3, 2);
+    
+    EXPECT_NO_THROW({
+        first_neuron.AddLowerInChainNeuron(&second_neuron);
+        first_neuron.AddLowerInChainNeuron(&third_neuron);
+        first_neuron.AddChildNeuron(&first_child_neuron);
+        first_child_neuron.AddLowerInChainNeuron(&second_child_neuron);
+        first_child_neuron.AddLowerInChainNeuron(&third_child_neuron);
+    });
+    EXPECT_EQ(first_child_neuron.GetChildEdges().size(), 0);
+    EXPECT_EQ(first_neuron.GetParentEdges().size(), 0);
+    EXPECT_EQ(first_neuron.GetChildEdges().size(), 3);
+    EXPECT_EQ(second_neuron.GetChildEdges().size(), 3);
+    EXPECT_EQ(third_neuron.GetChildEdges().size(), 3);
+    EXPECT_EQ(first_child_neuron.GetParentEdges().size(), 3);
+    EXPECT_EQ(second_child_neuron.GetParentEdges().size(), 3);
+    EXPECT_EQ(third_child_neuron.GetParentEdges().size(), 3);
+    CheckParentConnections(first_child_neuron, first_neuron, second_neuron, third_neuron);
+    CheckParentConnections(second_child_neuron, first_neuron, second_neuron, third_neuron);
+    CheckParentConnections(third_child_neuron, first_neuron, second_neuron, third_neuron);
+    CheckChildConnections(first_neuron, first_child_neuron, second_child_neuron, third_child_neuron);
+    CheckChildConnections(second_neuron, first_child_neuron, second_child_neuron, third_child_neuron);
+    CheckChildConnections(third_neuron, first_child_neuron, second_child_neuron, third_child_neuron);
+}
+
+
+TEST_F(FullTestingNeurons, testing_conenctions_2) {
+    TestingNeuronNetwork first_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 1);
+    TestingNeuronNetwork second_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 1);
+    TestingNeuronNetwork third_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 3, 1);
+    TestingNeuronNetwork first_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 2);
+    TestingNeuronNetwork second_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 2);
+    TestingNeuronNetwork third_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 3, 2);
+
+    EXPECT_NO_THROW({
+        second_neuron.AddLowerInChainNeuron(&third_neuron);
+        first_neuron.AddLowerInChainNeuron(&second_neuron);
+        second_child_neuron.AddLowerInChainNeuron(&third_child_neuron);
+        first_child_neuron.AddLowerInChainNeuron(&second_child_neuron);
+        first_neuron.AddChildNeuron(&first_child_neuron);
+    });
+    EXPECT_EQ(first_child_neuron.GetChildEdges().size(), 0);
+    EXPECT_EQ(first_neuron.GetParentEdges().size(), 0);
+    EXPECT_EQ(first_neuron.GetChildEdges().size(), 3);
+    EXPECT_EQ(second_neuron.GetChildEdges().size(), 3);
+    EXPECT_EQ(third_neuron.GetChildEdges().size(), 3);
+    EXPECT_EQ(first_child_neuron.GetParentEdges().size(), 3);
+    EXPECT_EQ(second_child_neuron.GetParentEdges().size(), 3);
+    EXPECT_EQ(third_child_neuron.GetParentEdges().size(), 3);
+
+    // Проверка связей с родителями
+    CheckParentConnections(first_child_neuron, first_neuron, second_neuron, third_neuron);
+    CheckParentConnections(second_child_neuron, first_neuron, second_neuron, third_neuron);
+    CheckParentConnections(third_child_neuron, first_neuron, second_neuron, third_neuron);
+
+    // Проверка связей с детьми
+    CheckChildConnections(first_neuron, first_child_neuron, second_child_neuron, third_child_neuron);
+    CheckChildConnections(second_neuron, first_child_neuron, second_child_neuron, third_child_neuron);
+    CheckChildConnections(third_neuron, first_child_neuron, second_child_neuron, third_child_neuron);
+}
+
+
 TEST_F(FullTestingNeurons, testing_add_get_output) {
-    TestingNeuronNetwork first_neuron(coefficient_of_inertia_, step_of_movement_, 1, 1);
-    TestingNeuronNetwork second_neuron(coefficient_of_inertia_, step_of_movement_, 2, 1);
-    TestingNeuronNetwork first_child_neuron(coefficient_of_inertia_, step_of_movement_, 1, 2);
+    TestingNeuronNetwork first_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 1);
+    TestingNeuronNetwork second_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 2, 1);
+    TestingNeuronNetwork first_child_neuron(mlp::SigmoidFunction, coefficient_of_inertia_, step_of_movement_, 1, 2);
     first_neuron.AddLowerInChainNeuron(&second_neuron);
     second_neuron.AddChildNeuron(&first_child_neuron);
     float first_value = 0.1;
@@ -258,10 +350,58 @@ TEST_F(FullNeuralNetworkTesting, testing_update_chain_and_all) {
 }
 
 
+TEST_F(FullNeuralNetworkTesting, testing_compute_output) {
+    float new_value = 0.0;
+    float first_out = 0.124;
+    float second_out = 0.3333;
+    first_neuron.AddOutput(first_out);
+    second_neuron.AddOutput(second_out);
+    const std::vector<std::shared_ptr<mlp::Edge>> parents = first_child_neuron.GetParentEdges();
+    for (std::size_t i = 0; i < parents.size(); ++i) {
+        new_value += parents[i] -> GetWeight() * \
+            dynamic_cast<TestingNeuronNetwork*>(parents[i] -> GetLeftNeuron()) -> GetOutput();
+    }
+    new_value = mlp::SigmoidFunction(new_value);
+    first_child_neuron.ComputeOutput();
+    EXPECT_NEAR(first_child_neuron.GetOutput(), new_value, exp);
+}
+
+
+TEST_F(FullNeuralNetworkTesting, testing_compute_chain_output) {
+    float new_value = 0.0;
+    float first_out = 0.124;
+    float second_out = 0.3333;
+    first_neuron.AddOutput(first_out);
+    second_neuron.AddOutput(second_out);
+    const std::vector<std::shared_ptr<mlp::Edge>> parents = first_child_neuron.GetParentEdges();
+    for (std::size_t i = 0; i < parents.size(); ++i) {
+        new_value += parents[i] -> GetWeight() * \
+            dynamic_cast<TestingNeuronNetwork*>(parents[i] -> GetLeftNeuron()) -> GetOutput();
+    }
+    new_value = mlp::SigmoidFunction(new_value);
+    third_child_neuron.ComputeChainOutput();
+    EXPECT_NEAR(first_child_neuron.GetOutput(), new_value, exp);
+}
+
+
+TEST_F(FullNeuralNetworkTesting, testing_compute_all_output) {
+    float new_value = 0.0;
+    float first_out = 0.124;
+    float second_out = 0.3333;
+    first_neuron.AddOutput(first_out);
+    second_neuron.AddOutput(second_out);
+    const std::vector<std::shared_ptr<mlp::Edge>> parents = first_child_neuron.GetParentEdges();
+    for (std::size_t i = 0; i < parents.size(); ++i) {
+        float new_output = dynamic_cast<TestingNeuronNetwork*>(parents[i] -> GetLeftNeuron()) -> GetOutput();
+        new_value += parents[i] -> GetWeight() * \
+                mlp::SigmoidFunction(new_output); 
+                // потому что у меня нет поправки на input_neuron, и он в ComputeAll проводит output через функцию активации
+    }
+    new_value = mlp::SigmoidFunction(new_value);
+    second_last_neuron.ComputeAllOutput();
+    EXPECT_NEAR(first_child_neuron.GetOutput(), new_value, exp);
+}
 // TODO tests for
-// virtual void ComputeOutput() override;
-// virtual void ComputeChainOutput();
-// virtual void ComputeAllOutput(); 
 // virtual void ComputeError() override;
 // virtual void ComputeChainError();
 // virtual void ComputeAllError();
