@@ -59,11 +59,7 @@ namespace mlp {
 
 
     void Neuron::AddChildNeuron(Neuron *child_neuron) {  // TODO change in output neuron
-        Neuron* first_child_neuron = child_neuron -> GetFirstNeuronInChain();
-        while (first_child_neuron != nullptr) {
-            LinkChildNeuronWithOtherChild(first_child_neuron);
-            first_child_neuron = first_child_neuron -> lower_neuron_;
-        }
+        LinkChildNeuronWithOtherChild(child_neuron);
     }
 
 
@@ -213,15 +209,20 @@ namespace mlp {
         }
     }
 
-    void Neuron::LinkChildNeuronWithOtherChild(Neuron *child_neuron) {
+    void Neuron::LinkChildNeuronWithOtherChild(Neuron *child_neuron) { 
+        Neuron* first_in_child_neuron = child_neuron -> GetFirstNeuronInChain();
         Neuron* first_neuron_in_chain = GetFirstNeuronInChain();
-        if (child_edges_.size() != 0) {
+        if (first_neuron_in_chain -> child_edges_.size() != 0) {
             dynamic_cast<Neuron*>(first_neuron_in_chain -> child_edges_[first_neuron_in_chain -> child_edges_.size() - 1] -> GetRightNeuron()) -> AddLowerInChainNeuron(child_neuron);
-        } else {                   
+        } else { 
             while (first_neuron_in_chain != nullptr) {
-                std::shared_ptr<Edge> edge = std::make_shared<Edge>(coefficient_of_inertia_, step_of_movement_ , first_neuron_in_chain, child_neuron);
-                first_neuron_in_chain -> child_edges_.push_back(edge);
-                child_neuron -> parent_edges_.push_back(edge);
+                while (first_in_child_neuron != nullptr) {
+                    std::shared_ptr<Edge> edge = std::make_shared<Edge>(coefficient_of_inertia_, step_of_movement_, first_neuron_in_chain, first_in_child_neuron);
+                    first_neuron_in_chain -> child_edges_.push_back(edge);
+                    first_in_child_neuron -> parent_edges_.push_back(edge);
+                    first_in_child_neuron = first_in_child_neuron -> lower_neuron_;
+                }
+                first_in_child_neuron = child_neuron -> GetFirstNeuronInChain();
                 first_neuron_in_chain = first_neuron_in_chain -> lower_neuron_;
             }
         }
