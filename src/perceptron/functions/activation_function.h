@@ -8,7 +8,7 @@
 namespace mlp {
 
 
-    float sigmoid_function(float &x) {
+    float SigmoidFunction(float &x) {
         return 1 / (1 + std::exp(-x));
     }
 
