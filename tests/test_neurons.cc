@@ -53,7 +53,6 @@ class FullNeuralNetworkTesting : public FullTestingNeurons {
 
 
 
-
 TEST_F(FullTestingNeurons, testing_the_creation_1) {
     std::size_t id = 1, layer_id = 1;
     EXPECT_NO_THROW({
@@ -394,19 +393,65 @@ TEST_F(FullNeuralNetworkTesting, testing_compute_all_output) {
     for (std::size_t i = 0; i < parents.size(); ++i) {
         float new_output = dynamic_cast<TestingNeuronNetwork*>(parents[i] -> GetLeftNeuron()) -> GetOutput();
         new_value += parents[i] -> GetWeight() * \
-                mlp::SigmoidFunction(new_output); 
-                // потому что у меня нет поправки на input_neuron, и он в ComputeAll проводит output через функцию активации
+            mlp::SigmoidFunction(new_output); 
+            // потому что у меня нет поправки на input_neuron, и он в ComputeAll проводит output через функцию активации
     }
     new_value = mlp::SigmoidFunction(new_value);
     second_last_neuron.ComputeAllOutput();
     EXPECT_NEAR(first_child_neuron.GetOutput(), new_value, exp);
 }
-// TODO tests for
-// virtual void ComputeError() override;
-// virtual void ComputeChainError();
-// virtual void ComputeAllError();
-// virtual float GetTopCompute() override;
-// virtual std::vector<float> GetAllCompute();
-// Neuron* GetFirstNeuronInChain();
-// Neuron* GetFirstNeuronInLastLayer();
-// Neuron* GetFirstNeuronInFirstLayer();
+
+
+TEST_F(FullNeuralNetworkTesting, testing_get_top_output) {
+    float top_value = 0.1111;
+    second_last_neuron.AddOutput(top_value);
+    EXPECT_NEAR(first_child_neuron.GetTopOutput(), top_value, exp);
+    EXPECT_NEAR(second_child_neuron.GetTopOutput(), top_value, exp);
+    EXPECT_NEAR(third_child_neuron.GetTopOutput(), top_value, exp);
+}
+
+
+TEST_F(FullNeuralNetworkTesting, testing_get_all_output) {
+    float first = 0.125, second = 0.777;
+    first_last_neuron.AddOutput(first);
+    second_last_neuron.AddOutput(second);
+    std::vector<float> all_output = second_child_neuron.GetAllOutput();
+    EXPECT_NEAR(all_output[0], first, exp);
+    EXPECT_NEAR(all_output[1], second, exp);
+}
+
+
+TEST_F(FullNeuralNetworkTesting, testing_get_first_neuron_in_chain) {
+    EXPECT_EQ(first_neuron.GetFirstNeuronInChain(), &first_neuron);
+    EXPECT_EQ(second_neuron.GetFirstNeuronInChain(), &first_neuron);
+    EXPECT_EQ(first_child_neuron.GetFirstNeuronInChain(), &first_child_neuron);
+    EXPECT_EQ(second_child_neuron.GetFirstNeuronInChain(), &first_child_neuron);
+    EXPECT_EQ(third_child_neuron.GetFirstNeuronInChain(), &first_child_neuron);
+    EXPECT_EQ(first_last_neuron.GetFirstNeuronInChain(), &first_last_neuron);
+    EXPECT_EQ(second_last_neuron.GetFirstNeuronInChain(), &first_last_neuron);
+}
+
+
+
+TEST_F(FullNeuralNetworkTesting, testing_get_first_neuron_in_last_layer) {
+    EXPECT_EQ(first_neuron.GetFirstNeuronInLastLayer(), &first_last_neuron);
+    EXPECT_EQ(second_neuron.GetFirstNeuronInLastLayer(), &first_last_neuron);
+    EXPECT_EQ(first_child_neuron.GetFirstNeuronInLastLayer(), &first_last_neuron);
+    EXPECT_EQ(second_child_neuron.GetFirstNeuronInLastLayer(), &first_last_neuron);
+    EXPECT_EQ(third_child_neuron.GetFirstNeuronInLastLayer(), &first_last_neuron);
+    EXPECT_EQ(first_last_neuron.GetFirstNeuronInLastLayer(), &first_last_neuron);
+    EXPECT_EQ(second_last_neuron.GetFirstNeuronInLastLayer(), &first_last_neuron);
+}
+
+
+
+TEST_F(FullNeuralNetworkTesting, testing_get_first_neuron_in_first_layer) {
+    EXPECT_EQ(first_neuron.GetFirstNeuronInFirstLayer(), &first_neuron);
+    EXPECT_EQ(second_neuron.GetFirstNeuronInFirstLayer(), &first_neuron);
+    EXPECT_EQ(first_child_neuron.GetFirstNeuronInFirstLayer(), &first_neuron);
+    EXPECT_EQ(second_child_neuron.GetFirstNeuronInFirstLayer(), &first_neuron);
+    EXPECT_EQ(third_child_neuron.GetFirstNeuronInFirstLayer(), &first_neuron);
+    EXPECT_EQ(first_last_neuron.GetFirstNeuronInFirstLayer(), &first_neuron);
+    EXPECT_EQ(second_last_neuron.GetFirstNeuronInFirstLayer(), &first_neuron);
+}
+

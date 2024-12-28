@@ -17,7 +17,7 @@ namespace mlp {
         virtual void UpdateWeight() = 0;
         virtual void ComputeOutput() = 0;
         virtual void ComputeError() = 0;
-        virtual float GetTopCompute() = 0;
+        virtual float GetTopOutput() = 0;
         virtual const float& GetError() const = 0;
         virtual const float& GetOutput() const = 0;
     };
