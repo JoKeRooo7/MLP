@@ -35,8 +35,8 @@ namespace mlp {
             virtual void ComputeError() override;
             virtual void ComputeChainError();
             virtual void ComputeAllError();
-            virtual float GetTopCompute() override;
-            virtual std::vector<float> GetAllCompute();
+            virtual float GetTopOutput() override;
+            virtual std::vector<float> GetAllOutput();
 
             Neuron* GetFirstNeuronInChain();
             Neuron* GetLastNeuronInChain();
@@ -54,7 +54,7 @@ namespace mlp {
             float error_{0.0};
             float &coefficient_of_inertia_;
             float &step_of_movement_;
-            // activation_function_ - переменная с сигранутрой функции
+            // activation_function_ - переменная с сигнатурой функции
             float (*activation_function_)(float&);
 
             Neuron *upper_neuron_ = nullptr;

@@ -114,7 +114,7 @@ namespace mlp {
     }
 
 
-    void Neuron::ComputeError() { // TODO change in output  neuron
+    void Neuron::ComputeError() { // TODO change in input and output neuron
         // δj​= oj * ​(1−oj​)​ * sun(δk * ​wjk​)
         float all_sum{0.0};
         for (std::size_t i = 0; i < child_edges_.size(); ++i) {
@@ -124,13 +124,13 @@ namespace mlp {
     }
 
 
-    void Neuron::ComputeChainError() { // TODO change in input  neuron
+    void Neuron::ComputeChainError() { // TODO change in input and output neuron
         ComputeChain(this, &Neuron::ComputeError, &Neuron::upper_neuron_);
         ComputeChain(lower_neuron_, &Neuron::ComputeError, &Neuron::lower_neuron_);
     }
 
 
-    void Neuron::ComputeAllError() { // TODO change in input  neuron
+    void Neuron::ComputeAllError() { // TODO change in input  neuron -> None
         Neuron* neuron =  GetFirstNeuronInLastLayer();
         while (!neuron -> parent_edges_.empty()) {
             neuron -> ComputeChainError();
@@ -139,7 +139,7 @@ namespace mlp {
     }
 
 
-    float Neuron::GetTopCompute() { 
+    float Neuron::GetTopOutput() { 
         Neuron *neuron = GetFirstNeuronInLastLayer();
         float top_value{0.0};
         GetTopInChain(top_value, neuron, &Neuron::upper_neuron_);
@@ -148,10 +148,10 @@ namespace mlp {
     }
 
 
-    std::vector<float> Neuron::GetAllCompute() {
+    std::vector<float> Neuron::GetAllOutput() {
         std::vector<float> all_res;
         Neuron *neuron = GetFirstNeuronInLastLayer();
-        while(neuron -> lower_neuron_ != nullptr) {
+        while(neuron != nullptr) {
             all_res.push_back(neuron -> output_);
             neuron = neuron -> lower_neuron_;
         }
@@ -290,7 +290,7 @@ namespace mlp {
             neuron_in_layer = dynamic_cast<Neuron*>((edges[0].get()->*shift)());
             edges = neuron_in_layer->*edges_selector;
         }
-        return neuron_in_layer; // возвращаем найденный нейрон
+        return neuron_in_layer -> GetFirstNeuronInChain();
     }
 
 }  // mlp
